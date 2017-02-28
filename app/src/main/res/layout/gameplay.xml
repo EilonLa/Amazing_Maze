@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="#fff">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:id="@+id/custom_tool_bar_game"
+        >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/back_create_game"
+            android:layout_alignParentLeft="true"
+            android:background="@mipmap/back_tool_bar"
+            />
+        <UI.FontCreator_Logo
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"
+            android:textSize="11dp"
+            android:text="The Amazing Maze"
+            android:id="@+id/title_create_game"
+            android:textColor="@android:color/holo_red_light"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/undo_create_game"
+            android:layout_toLeftOf="@+id/ok_create_game"
+            android:background="@mipmap/undo"
+
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ok_create_game"
+            android:layout_alignParentRight="true"
+            android:background="@mipmap/ok"
+
+            />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/custom_tool_bar_game"
+        android:layout_above="@+id/trap_custom_tool_bar"
+        >
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:id="@+id/avatar"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/activity_game_maze_board"
+            android:background="@color/colorPrimary"
+            android:orientation="vertical"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        android:id="@+id/trap_custom_tool_bar_game"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/remove_trap_game"
+            android:layout_alignParentLeft="true"
+            android:background="@mipmap/remove"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/place_trap_game"
+            android:layout_toRightOf="@+id/remove_trap_game"
+            android:background="@mipmap/chest"
+            android:padding="30dp"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/trap_game"
+            android:layout_toRightOf="@+id/place_trap_game"
+            android:padding="30dp"
+            />
+        <UI.FontCreator_Logo
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textSize="10dp"
+            android:text="Start\nGame   "
+            android:id="@+id/start_game"
+            android:textColor="@android:color/holo_blue_bright"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerInParent="true"
+            >
+            <UI.FontCreator_Logo
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:textSize="10dp"
+                android:text="0"
+                android:id="@+id/timer_game_hours"
+                android:textColor="@android:color/holo_blue_bright"
+                />
+            <UI.FontCreator_Logo
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:textSize="10dp"
+                android:text="0"
+                android:id="@+id/timer_game_minutes"
+                android:textColor="@android:color/holo_blue_bright"
+                />
+            <UI.FontCreator_Logo
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:textSize="10dp"
+                android:text=":"
+                android:id="@+id/timer_game_coma"
+                android:textColor="@android:color/holo_blue_bright"
+                />
+            <UI.FontCreator_Logo
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:textSize="10dp"
+                android:text="60"
+                android:id="@+id/timer_game_seconds"
+                android:textColor="@android:color/holo_blue_bright"
+                />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/loadingPanel_game"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AmazingMaze</string>
+    <string name="action_settings">actionSettings</string>
+    <string name="create_a_new_maze">create a new maze</string>
+    <string name="find_maze">find a maze</string>
+    <string name="upgrade_maze">upgrade your maze</string>
+
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+                android:oneshot="false">
+    <item
+        android:drawable="@drawable/blue1"
+        android:duration="100"/>
+    <item
+        android:drawable="@drawable/blue2"
+        android:duration="100"/>
+    <item
+        android:drawable="@drawable/blue3"
+        android:duration="100"/>
+    <item
+        android:drawable="@drawable/blue4"
+        android:duration="100"/>
+    <item
+        android:drawable="@drawable/blue5"
+        android:duration="100"/>
+    <item
+        android:drawable="@drawable/blank"
+        android:duration="100"/>
+</animation-list>

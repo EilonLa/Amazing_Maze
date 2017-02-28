@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="#a0522d"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        android:id="@+id/custom_tool_bar"
+        >
+
+        <UI.FontCreator_Logo
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:textSize="11dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/x_for_coins"
+            android:textColor="#ffd700"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/x_for_coins"
+            android:background="@mipmap/coins"
+            />
+
+
+
+        <UI.FontCreator_Logo
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textSize="11dp"
+            android:text="Upgrade your maze"
+            android:id="@+id/title_create"
+            android:textColor="@android:color/holo_red_light"
+            />
+
+
+
+    </RelativeLayout>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#a0522d"
+        android:id="@+id/list_items_id"
+        style="@style/Widget.AppCompat.ListView.Menu"
+        android:headerDividersEnabled="true"
+        android:footerDividersEnabled="true"
+        android:dividerHeight="10dp" />
+</LinearLayout>

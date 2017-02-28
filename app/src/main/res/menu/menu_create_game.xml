@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".CreateGame">
+
+    <!--<item-->
+        <!--android:id="@+id/back"-->
+        <!--android:orderInCategory="200"-->
+        <!--android:title="User"-->
+        <!--android:icon="@mipmap/back_tool_bar"-->
+        <!--app:showAsAction="ifRoom"></item>-->
+    <item
+        android:id="@+id/ok"
+        android:orderInCategory="100"
+        android:title="ok"
+        android:icon="@mipmap/undo"
+        app:showAsAction="ifRoom"></item>
+    <item
+        android:id="@+id/undo"
+        android:orderInCategory="200"
+        android:title="undo"
+        android:icon="@mipmap/ok"
+        app:showAsAction="ifRoom"></item>
+</menu>

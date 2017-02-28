@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="250dp"
+        android:layout_height="100dp"
+        android:id="@+id/activity_main_login"
+        android:paddingTop="30dp"
+        android:layout_centerInParent="true">
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="130dp"
+            android:layout_alignParentLeft="true"
+            android:background="@mipmap/sign_in"
+            android:id="@+id/activity_main_sign_in"
+
+            />
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="130dp"
+            android:layout_alignParentRight="true"
+            android:background="@mipmap/sighn_up"
+            android:id="@+id/activity_main_sign_up"
+
+            />
+
+
+    </RelativeLayout>
+</RelativeLayout>

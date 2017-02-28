@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/layout"
+    android:background="#fff"
+     >
+
+    <!--<include-->
+        <!--android:id="@+id/tool_bar"-->
+        <!--layout="@layout/tool_bar"-->
+        <!--&gt;</include>-->
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@drawable/background"
+        android:id="@+id/activity_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:weightSum="1">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:id="@+id/activity_main_logo"
+
+            >
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/logo"
+                android:layout_centerHorizontal="true"
+                android:background="@mipmap/logo"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/logo"
+                android:id="@+id/logo_text"
+
+                >
+
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="T"
+                    android:textColor="@android:color/holo_red_dark"
+
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="H"
+                    android:textColor="@android:color/holo_orange_light"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="E"
+                    android:textColor="@android:color/holo_blue_bright"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text=" "
+                    android:textColor="@android:color/holo_blue_bright"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="A"
+                    android:textColor="@android:color/holo_green_dark"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="M"
+                    android:textColor="@android:color/holo_purple"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="A"
+                    android:textColor="#66FF00"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="Z"
+                    android:textColor="#FF9900"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="I"
+                    android:textColor="@android:color/holo_green_dark"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="N"
+                    android:textColor="@android:color/holo_red_light"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="G"
+                    android:textColor="#FFFF99"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text=" "
+                    android:textColor="@android:color/white"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="M"
+                    android:textColor="#3344FF"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="A"
+                    android:textColor="#FF4400"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="Z"
+                    android:textColor="#FFAA77"
+                    />
+                <UI.FontCreator_Logo
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerInParent="true"
+                    android:textSize="23dp"
+                    android:text="E"
+                    android:textColor="#FFFF00"
+                    />
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+        <FrameLayout
+            android:layout_width="250dp"
+            android:layout_height="110dp"
+            android:id="@+id/activity_main_login"
+            android:layout_below="@+id/activity_main_logo"
+            android:paddingTop="30dp"
+            android:layout_centerInParent="true">
+
+            <!--<Button-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentLeft="true"-->
+                <!--android:background="@mipmap/sign_in"-->
+                <!--android:id="@+id/activity_main_sign_in"-->
+
+                <!--/>-->
+            <!--<Button-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:background="@mipmap/sighn_up"-->
+                <!--android:id="@+id/activity_main_sign_up"-->
+
+                <!--/>-->
+
+
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/activity_main_menu"
+            android:layout_below="@+id/activity_main_login"
+            android:paddingTop="20dp"
+            android:layout_centerInParent="true">
+
+            <UI.FontCreator_Buttons
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/create_new"
+                android:text="@string/create_a_new_maze"
+                android:textSize="30sp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@android:color/black"
+
+
+                />
+            <UI.FontCreator_Buttons
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/Find_maze"
+                android:text="@string/find_maze"
+                android:layout_below="@+id/create_new"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="15dp"
+                android:textSize="30sp"
+                android:textColor="@android:color/black"
+
+
+                />
+            <UI.FontCreator_Buttons
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/Upgrade_maze"
+                android:text="@string/upgrade_maze"
+                android:layout_below="@+id/Find_maze"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="15sp"
+                android:textSize="30dp"
+                android:textColor="@android:color/black"
+
+                />
+            <TextView android:id="@+id/logout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:gravity="center"
+                android:layout_below="@+id/Upgrade_maze"
+                android:text="Log out "
+                android:textSize="16dip"/>
+
+        </RelativeLayout>
+
+        <TextView android:id="@+id/credits"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:gravity="center"
+            android:paddingTop="70dp"
+            android:layout_below="@+id/activity_main_menu"
+            android:text="Created by Dvir Twina and Eilon Laor "
+            android:textSize="16dip"/>
+
+    </RelativeLayout>
+</LinearLayout>

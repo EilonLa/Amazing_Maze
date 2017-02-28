@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:name="The Amazing Maze"
+    package="com.example.cdv.amazingmaze">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/logo"
+        android:supportsRtl="false"
+        android:largeHeap="true"
+        android:theme="@android:style/Theme.Black.NoTitleBar">
+        >
+        <activity android:name="activities.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar"
+            >
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:name="activities.CreateAMaze" />
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:name="activities.FindAMaze" />
+        <activity
+
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:name="activities.GamePlay" />
+
+        <activity
+            android:theme="@style/AppTheme.Items"
+            android:name="activities.PopItems"
+
+            />
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:name="activities.SignInScreen" />
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:name="activities.SignUpScreen" />
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:name="activities.ResultScreen" />
+
+
+
+
+    </application>
+
+</manifest>

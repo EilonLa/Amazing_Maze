@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="#fff"
+    android:id="@+id/endLayout"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background"
+        android:layout_gravity="center_horizontal">
+
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:id="@+id/endImageView"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/blast"
+            />
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:id="@+id/fireworks1"
+            android:layout_alignRight="@id/endImageView"/>
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:id="@+id/fireworks2"
+            android:layout_alignBottom="@id/endImageView"/>
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:id="@+id/fireworks3"
+            android:layout_alignParentLeft="true"/>
+
+
+        <UI.FontCreator_Logo
+            android:id="@+id/finalScore"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:layout_below="@id/endImageView"
+            android:layout_gravity="center_horizontal" />
+
+
+        <UI.FontCreator_Buttons
+            android:id="@+id/btn_play_again"
+            android:text="play\n again"
+            android:layout_below="@id/finalScore"
+            android:layout_alignEnd="@+id/finalScore"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="0dp"
+            android:gravity="right"
+            android:textSize="30dp"
+            android:padding="0dp"
+            />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/fragmentPlace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+
+
+
+</RelativeLayout>
+
+
+
+    <!--</RelativeLayout>-->
