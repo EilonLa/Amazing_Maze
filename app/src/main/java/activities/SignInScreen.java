@@ -1,6 +1,7 @@
 package activities;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import DB.DataRowUser;
 import Logic.Trap;
 import Logic.User;
+import UI.SignedInFragment;
 
 /**
  * Created by אילון on 26/01/2017.
@@ -31,6 +33,7 @@ public class SignInScreen extends Activity {
     private EditText mPasswrdEditText;
     private Button mLoginBtn;
     private SignInScreen mSelf;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +86,8 @@ public class SignInScreen extends Activity {
                             SharedPreferences.Editor editor = MainActivity.mSharedPref.edit();
                             editor.putInt("lastId", dataForUser.GetUserId());
                             editor.commit();
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            MainActivity.mNeedToRefresh = true;
+                            finish();
                         }
                     }
                 }

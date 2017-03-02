@@ -97,12 +97,12 @@ public class SignUpScreen extends Activity {
                     }else{
                         dataForUser = new DataRowUser(userName,password,User.DEFAULT_NUM_OF_COINS,null);
                         MainActivity.mDataBase.AddRow_User(dataForUser);
-                        int userId = MainActivity.mDataBase.GetUserByName(userName).GetUserId();
-                        MainActivity.mUser = new User (userId,password,userName,User.DEFAULT_NUM_OF_COINS, new ArrayList<Trap>());
+                        MainActivity.mUser = new User (1,password,userName,User.DEFAULT_NUM_OF_COINS, new ArrayList<Trap>());
                         SharedPreferences.Editor editor = MainActivity.mSharedPref.edit();
-                        editor.putInt("lastId", dataForUser.GetUserId());
+                        editor.putInt("lastId", MainActivity.mUser.GetId());
                         editor.commit();
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        MainActivity.mNeedToRefresh = true;
+                        finish();
                     }
                 }
             }

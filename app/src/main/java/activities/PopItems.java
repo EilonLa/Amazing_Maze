@@ -59,13 +59,8 @@ public class PopItems extends Activity {
                     Object[] tempObj = (Object[]) mListView.getAdapter().getItem(index);
                     boolean isAttack = (boolean) tempObj[4];
                     if (mFromGameMode && !isAttack || mFromCreate && isAttack) {
-                        int tempIndex = Trap.MatchIconToIndex((int) tempObj[0], isAttack);
-                        Trap tempTrap;
-                        if (isAttack)
-                            tempTrap = new Trap(tempIndex);
-                        else
-                            tempTrap = new Trap(tempIndex * -1);
-
+                        int tempIndex = Trap.MatchIconToIndex((int) tempObj[0]);
+                        Trap tempTrap = new Trap(tempIndex);
                         if (!Board.mStack.isEmpty()) {
                             Tile tempTile = Board.mStack.peek();
                             if (tempTile.GetTrap() != null && !mFromGameMode) {
@@ -85,7 +80,7 @@ public class PopItems extends Activity {
                                 //TODO: update data base for amount of mUser traps
                                 mPopItemView.RemoveView(index);
                                 if (mFromGameMode ) {
-                                    Board.PROTECTION = Trap.GetDefenceCosts()[tempTrap.GetTrapIndex()];
+                                    Board.PROTECTION = Trap.GetCosts()[tempTrap.GetTrapIndex()];
                                     Board.CompleteShieldLayout(Board.mStack.peek(), tempTrap);
                                 }
                                 mIsFinished = true;
@@ -99,20 +94,18 @@ public class PopItems extends Activity {
                     }
                 } else if (mUpgrade) {
                     Object[] tempObj = (Object[]) mListView.getAdapter().getItem(index);
-                    int tempIndex = Trap.MatchIconToIndex((int) tempObj[0], (boolean) tempObj[4]);
-                    if (!(boolean) tempObj[4])
-                        tempIndex *= -1;
+                    int tempIndex = Trap.MatchIconToIndex((int) tempObj[0]);
                     Trap tempTrap = new Trap(tempIndex);
                     if (MainActivity.mUser.GetCoins() >= tempTrap.GetPrice()) {
                         MainActivity.mUser.GetTraps().add(0, tempTrap);
                         MainActivity.mUser.AddToCoins(-1 * tempTrap.GetPrice());
-                        MainActivity.mDataBase.AddRow_UserTrap(new DataRowTrapUser(MainActivity.mUser.GetId(), tempTrap.GetTrapIndex()));
                     } else {
                         Toast.makeText(mSelf,NOT_ENOUGH_COINS_TAG , Toast.LENGTH_LONG).show();
                     }
-                    MainActivity.mDataBase.UpdateCoins(MainActivity.mUser.GetCoins(),MainActivity.mUser.GetId());
-                    final DataRowUser dr = new DataRowUser(MainActivity.mUser.GetId(), MainActivity.mUser.GetUserName(),MainActivity.mUser.GetPassword(), MainActivity.mUser.GetCoins(), null);
-                    MainActivity.mDataBase.AddRow_User(dr);
+                    //MainActivity.mDataBase.UpdateCoins(MainActivity.mUser.GetCoins(),MainActivity.mUser.GetId());
+                    //final DataRowUser dr = new DataRowUser(MainActivity.mUser.GetId(), MainActivity.mUser.GetUserName(),MainActivity.mUser.GetPassword(), MainActivity.mUser.GetCoins(), null);
+                    //MainActivity.mDataBase.AddRow_User(dr);
+                    MainActivity.mDataBase.SaveCurrentState(MainActivity.mUser);
                     mSelf.finish();
                 }
             }
@@ -125,16 +118,18 @@ public class PopItems extends Activity {
         ArrayList<Object[]> data = new ArrayList<>();
         if (mFromCreate || mFromGameMode) {
             for (Trap trap : MainActivity.mUser.GetTraps()) {
-                Object[] tempObjArr = CheckViewExists(data, trap);
-                if (tempObjArr == null) {
-                    Object[] temp = {trap.GetIconId(), trap.GetName(), trap.GetDescription(), 1, trap.IsAttack()};
-                    data.add(temp);
-                } else {
-                    int tempCount = Integer.parseInt(tempObjArr[3].toString());
-                    tempCount++;
-                    data.remove(tempObjArr);
-                    tempObjArr[3] = tempCount;
-                    data.add(tempObjArr);
+                if (trap != null) {
+                    Object[] tempObjArr = CheckViewExists(data, trap);
+                    if (tempObjArr == null) {
+                        Object[] temp = {trap.GetIconId(), trap.GetName(), trap.GetDescription(), 1, trap.IsAttack()};
+                        data.add(temp);
+                    } else {
+                        int tempCount = Integer.parseInt(tempObjArr[3].toString());
+                        tempCount++;
+                        data.remove(tempObjArr);
+                        tempObjArr[3] = tempCount;
+                        data.add(tempObjArr);
+                    }
                 }
             }
         }
@@ -161,12 +156,18 @@ public class PopItems extends Activity {
     }
 
     public Object[] CheckViewExists(ArrayList<Object[]> viewList, Trap trap) {
-        for (Object[] obj : viewList) {
-            if (obj != null && obj[1].toString().compareToIgnoreCase(trap.GetName()) == 0) {
-                return obj;
-            }
-        }
-        return null;
+//       try {
+           if (trap != null) {
+               for (Object[] obj : viewList) {
+                   if (obj != null && obj.length > 0 && obj[1] != null && obj[1].toString().compareToIgnoreCase(trap.GetName()) == 0) {
+                       return obj;
+                   }
+               }
+           }
+           return null;
+//       }catch (Exception e){
+//           return null;
+//       }
     }
 
     @Override

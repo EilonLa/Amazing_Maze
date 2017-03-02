@@ -9,6 +9,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import Logic.Trap;
+import Logic.User;
+import activities.MainActivity;
+
 
 /**
  * Created by eilon & dvir on 29/11/2016.
@@ -23,6 +27,11 @@ public class DBOperator extends SQLiteOpenHelper {
     public DBOperator(Activity context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.mActivity = context;
+    }
+
+    public void closeConnection(){
+        if (getWritableDatabase().isOpen())
+            getWritableDatabase().close();
     }
 
     @Override
@@ -43,14 +52,18 @@ public class DBOperator extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        db.execSQL(FeedReaderContract.DELETE_USER_TABLE);
-        db.execSQL(FeedReaderContract.DELETE_TRAP_TABLE);
-        db.execSQL(FeedReaderContract.DELETE_TILE_TABLE);
-        db.execSQL(FeedReaderContract.DELETE_BOARD_TABLE);
-        db.execSQL(FeedReaderContract.DELETE_TRAP_TILE_TABLE);
-        db.execSQL(FeedReaderContract.DELETE_BOARD_USER_TABLE);
-        db.execSQL(FeedReaderContract.DELETE_TRAP_USER_TABLE);
-        onCreate(db);
+        try {
+            db.execSQL(FeedReaderContract.DELETE_USER_TABLE);
+            db.execSQL(FeedReaderContract.DELETE_TRAP_TABLE);
+            db.execSQL(FeedReaderContract.DELETE_TILE_TABLE);
+            db.execSQL(FeedReaderContract.DELETE_BOARD_TABLE);
+            db.execSQL(FeedReaderContract.DELETE_TRAP_TILE_TABLE);
+            db.execSQL(FeedReaderContract.DELETE_BOARD_USER_TABLE);
+            db.execSQL(FeedReaderContract.DELETE_TRAP_USER_TABLE);
+            onCreate(db);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void AddRow_User(DataRowUser dr) {
@@ -71,7 +84,7 @@ public class DBOperator extends SQLiteOpenHelper {
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_TRAP_TYPE, dr.GetType());
         // Inserting Row
         db.insert(FeedReaderContract.FeedData.TABLE_NAME_TRAP, null, values);
-        db.close(); // Closing database connection
+      //  db.close(); // Closing database connection
     }
 
     public void AddRow_Tiles(DataRowTile dr) {//2
@@ -84,7 +97,7 @@ public class DBOperator extends SQLiteOpenHelper {
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_IS_EXIT, dr.GetIsExit());
         // Inserting Row
         db.insert(FeedReaderContract.FeedData.TABLE_NAME_TILE, null, values);
-        db.close(); // Closing database connection
+        //db.close(); // Closing database connection
     }
 
     public void AddRow_Board(DataRowBoard dr) {
@@ -96,7 +109,7 @@ public class DBOperator extends SQLiteOpenHelper {
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_TILE_ID_BOARD, dr.GetTileId());
         // Inserting Row
         db.insert(FeedReaderContract.FeedData.TABLE_NAME_BOARD, null, values);
-        db.close(); // Closing database connection
+       // db.close(); // Closing database connection
     }
 
     public void AddRows_Board(ArrayList<DataRowBoard> rows) {
@@ -114,7 +127,7 @@ public class DBOperator extends SQLiteOpenHelper {
         db.setTransactionSuccessful();
         db.endTransaction();
         Log.i("ending save", "");
-        db.close(); // Closing database connection
+       // db.close(); // Closing database connection
     }
 
     public void AddRow_TileTrap(DataRowTileTrap dr) {
@@ -124,7 +137,7 @@ public class DBOperator extends SQLiteOpenHelper {
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_TILE_ID_TRAP_TILE, dr.GetTileId());
         // Inserting Row
         db.insert(FeedReaderContract.FeedData.TABLE_NAME_TRAP_TILE, null, values);
-        db.close(); // Closing database connection
+       // db.close(); // Closing database connection
     }
 
     public void AddRow_UserBoard(DataRowUserBoard dr) {
@@ -134,29 +147,58 @@ public class DBOperator extends SQLiteOpenHelper {
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_BOARD_ID_BOARD_USER, dr.GetBoardId());
         // Inserting Row
         db.insert(FeedReaderContract.FeedData.TABLE_NAME_TRAP, null, values);
-        db.close(); // Closing database connection
+       // db.close(); // Closing database connection
     }
 
     public void AddRow_UserTrap(DataRowTrapUser dr) {
+        closeConnection();
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_USER_ID_TRAP_USER, dr.GetUserId());
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_TRAP_ID_TRAP_USER, dr.GetTrapId());
         // Inserting Row
         db.insert(FeedReaderContract.FeedData.TABLE_NAME_TRAP_USER, null, values);
-        db.close(); // Closing database connection
+        //db.close(); // Closing database connection
+    }
+
+    public void SaveCurrentState(User user){
+        closeConnection();
+        final User tempUser = user;
+        if (user.GetBoard() != null)
+            user.GetBoard().SaveBoard(tempUser);
+        for (final Trap trap : user.GetTraps()) {
+            MainActivity.mDataBaseManager.addThread(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    AddRow_UserTrap(new DataRowTrapUser(tempUser.GetId(), trap.GetTrapIndex()));
+                }
+            }));
+
+        }
+        MainActivity.mDataBaseManager.addThread(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("UPDATE COINS", "before query");
+                UpdateCoins(tempUser.GetCoins(),tempUser.GetId());
+            }
+        }));
+
     }
 
     public void UpdateCoins(int coins, int userId){
+        closeConnection();
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE " +FeedReaderContract.FeedData.TABLE_NAME_USER+
                         " SET " +FeedReaderContract.FeedData.COLUMN_NAME_COINS+
                         " = "+coins+ " WHERE " +FeedReaderContract.FeedData.COLUMN_NAME_ID +
                         " = "+userId;
-        db.rawQuery(query,null);
+        db.execSQL(query);
+        Log.i("UPDATE COINS", "after query");
+
     }
 
     public DataRowUser GetUserByName(String userName){
+        closeConnection();
         SQLiteDatabase db = null;
         try {
             db = getReadableDatabase();
@@ -183,6 +225,7 @@ public class DBOperator extends SQLiteOpenHelper {
     }
 
     public int GetLastTileIdFromDB() {
+        closeConnection();
         SQLiteDatabase db = null;
         int id = 0;
         try {
@@ -196,7 +239,6 @@ public class DBOperator extends SQLiteOpenHelper {
                 id =  c.getInt(0);
             }
             c.close();
-
             return id;
         } catch (Exception E) {
             Log.i("", "creating data base");
@@ -233,13 +275,14 @@ public class DBOperator extends SQLiteOpenHelper {
     }
 
     public DataRowUser GetLastUserFromDB(int lastUserId) {
+        closeConnection();
         SQLiteDatabase db = null;
         try {
             db = getReadableDatabase();
             DataRowUser row = null;
             String query =
                     "SELECT * FROM " + FeedReaderContract.FeedData.TABLE_NAME_USER +
-                            " WHERE " + FeedReaderContract.FeedData.COLUMN_NAME_ID + " = "+lastUserId + " DESC LIMIT 1";
+                            " WHERE " + FeedReaderContract.FeedData.COLUMN_NAME_ID + " = "+lastUserId ;
 
             Cursor c = db.rawQuery(query, null);
             if (c != null && c.moveToFirst()) {
@@ -356,6 +399,7 @@ public class DBOperator extends SQLiteOpenHelper {
             return rows;
         } catch (Exception E) {
             Log.i("", "creating data base");
+            E.printStackTrace();
             onCreate(db);
         }
         return null;

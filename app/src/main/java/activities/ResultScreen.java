@@ -70,4 +70,10 @@ public class ResultScreen extends Activity {
         mAnimator = (AnimationDrawable) mBlast.getBackground();
         mAnimator.start();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MainActivity.mDataBase.SaveCurrentState(MainActivity.mUser);
+    }
 }

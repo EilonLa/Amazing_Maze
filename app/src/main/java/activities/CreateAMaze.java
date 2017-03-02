@@ -24,11 +24,11 @@ public class CreateAMaze extends FragmentActivity {
         mSetEntrance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (MainActivity.mUser.GetBoard().ismEntranceActivated()) {
-                    MainActivity.mUser.GetBoard().setmEntranceActivated(false);
+                if (MainActivity.mUser.GetBoard().IsEntranceActivated()) {
+                    MainActivity.mUser.GetBoard().SetEntranceActivated(false);
                 } else {
-                    MainActivity.mUser.GetBoard().setmEntranceActivated(true);
-                    MainActivity.mUser.GetBoard().setmExitActivated(false);
+                    MainActivity.mUser.GetBoard().SetEntranceActivated(true);
+                    MainActivity.mUser.GetBoard().SetExitActivated(false);
                 }
             }
         });
@@ -36,11 +36,11 @@ public class CreateAMaze extends FragmentActivity {
         mSetExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (MainActivity.mUser.GetBoard().ismExitActivated()) {
-                    MainActivity.mUser.GetBoard().setmExitActivated(false);
+                if (MainActivity.mUser.GetBoard().IsExitActivated()) {
+                    MainActivity.mUser.GetBoard().SetExitActivated(false);
                 } else {
-                    MainActivity.mUser.GetBoard().setmExitActivated(true);
-                    MainActivity.mUser.GetBoard().setmEntranceActivated(false);
+                    MainActivity.mUser.GetBoard().SetExitActivated(true);
+                    MainActivity.mUser.GetBoard().SetEntranceActivated(false);
                 }
             }
         });
@@ -49,7 +49,7 @@ public class CreateAMaze extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        MainActivity.mUser.GetBoard().SaveBoard();
+        MainActivity.mUser.GetBoard().SaveBoard(MainActivity.mUser);
         //finish();
     }
 }

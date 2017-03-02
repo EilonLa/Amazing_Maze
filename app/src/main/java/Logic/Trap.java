@@ -7,7 +7,7 @@ import com.example.cdv.amazingmaze.R;
  */
 
 public class Trap {
-    public static final int FIRE = 1;
+    public static final int FIRE = 0;
     public static final int FIVE_STEPS = 1;
     public static final int TEN_STEPS = 2;
     public static final int TWENTY_STEPS = 3;
@@ -17,27 +17,16 @@ public class Trap {
     public static final int COST_FOR_10_STEP_SHIELD = 10;
     public static final int COST_FOR_20_STEP_SHIELD = 20;
     public static final int COST_FOR_40_STEP_SHIELD = 40;
-    public final int COST_FOR_FIREBALL = 30;
+    public static final int COST_FOR_FIREBALL = 30;
 
-    public static int[] defenceCosts =
-            {0,COST_FOR_5_STEP_SHIELD,COST_FOR_10_STEP_SHIELD, COST_FOR_20_STEP_SHIELD, COST_FOR_40_STEP_SHIELD};
-
-    private int[] attackCosts =
-            {0,COST_FOR_FIREBALL/*,COST_FOR_SWORD*/};
-
-    private static int[] defenceIcons =
-            {0,R.mipmap.shield_5_steps, R.mipmap.shield_10_steps, R.mipmap.shield_20_steps, R.mipmap.shield_40_steps};
-    private static int[] attackIcons =
-            {0,R.mipmap.fireball/*, R.mipmap.sword*/};
-    private final String[] descriptions_defence =
-            {"","Protects you from attacks for 5 steps ("+COST_FOR_5_STEP_SHIELD+" COINS)", "Protects you from attacks for 10 steps ("+COST_FOR_10_STEP_SHIELD+" COINS)", "Protects you from attacks for 20 steps ("+COST_FOR_20_STEP_SHIELD+" COINS)", "Protects you from attacks for 40 steps ("+COST_FOR_40_STEP_SHIELD+" COINS)"};
-    private final String[] names_attack =
-            {"","Fire", "Sword"};
-    private final String[] names_defence =
-            {"","Shield (5 steps)", "Shield (10 steps)", "Shield (20 steps)", "Shield (40 steps)"};
-    private final String[] descriptions_attack =
-            {"","Set the path on fire ("+COST_FOR_FIREBALL+" COINS)"/*, "Cut your rival! ("+COST_FOR_SWORD+" COINS)"*/};
-
+    public static int[] mCosts =
+            {COST_FOR_FIREBALL, COST_FOR_5_STEP_SHIELD, COST_FOR_10_STEP_SHIELD, COST_FOR_20_STEP_SHIELD, COST_FOR_40_STEP_SHIELD};
+    private static int[] mIcons =
+            {R.mipmap.fireball, R.mipmap.shield_5_steps, R.mipmap.shield_10_steps, R.mipmap.shield_20_steps, R.mipmap.shield_40_steps};
+    private final String[] mDescriptions =
+            {"Set the path on fire (" + COST_FOR_FIREBALL + " COINS)", "Protects you from attacks for 5 steps (" + COST_FOR_5_STEP_SHIELD + " COINS)", "Protects you from attacks for 10 steps (" + COST_FOR_10_STEP_SHIELD + " COINS)", "Protects you from attacks for 20 steps (" + COST_FOR_20_STEP_SHIELD + " COINS)", "Protects you from attacks for 40 steps (" + COST_FOR_40_STEP_SHIELD + " COINS)"};
+    private final String[] mNames =
+            {"Fire", "Shield (5 steps)", "Shield (10 steps)", "Shield (20 steps)", "Shield (40 steps)"};
 
     private Tile mTile;
     private int mIconId;
@@ -49,24 +38,17 @@ public class Trap {
 
 
     public Trap(int trapsIndex) {
-        if (trapsIndex < 0) {
+        if (trapsIndex > 0) {
             mIsAttack = false;
-            trapsIndex = trapsIndex * -1;
         }
-        else
+        if (trapsIndex == 0)
             mIsAttack = true;
         this.mTrapIndex = trapsIndex;
-        if (mIsAttack && trapsIndex < attackIcons.length) {
-            this.mIconId = attackIcons[trapsIndex];
-            this.mDescription = descriptions_attack[trapsIndex];
-            this.mName = names_attack[trapsIndex];
-            this.mPrice = attackCosts[trapsIndex];
-        }
-        if (!mIsAttack && trapsIndex < defenceIcons.length) {
-            this.mIconId = defenceIcons[trapsIndex];
-            this.mDescription = descriptions_defence[trapsIndex];
-            this.mName = names_defence[trapsIndex];
-            this.mPrice = defenceCosts[trapsIndex];
+        if (trapsIndex < mIcons.length) {
+            this.mIconId = mIcons[trapsIndex];
+            this.mDescription = mDescriptions[trapsIndex];
+            this.mName = mNames[trapsIndex];
+            this.mPrice = mCosts[trapsIndex];
         }
     }
 
@@ -79,14 +61,11 @@ public class Trap {
     }
 
     public int GetIconResource() {
-        if (mIsAttack)
-            return attackIcons[mIconId];
-        else
-            return defenceIcons[mIconId];
+        return mIcons[mIconId];
     }
 
     public int GetTrapIndex() {
-            return mTrapIndex;
+        return mTrapIndex;
     }
 
 
@@ -95,20 +74,8 @@ public class Trap {
     }
 
 
-    public int[] GetDefenceIcons() {
-        return defenceIcons;
-    }
-
-    public void SetDefenceIcons(int[] defenceIcons) {
-        this.defenceIcons = defenceIcons;
-    }
-
-    public int[] GetAttackIcons() {
-        return attackIcons;
-    }
-
-    public void SetAttackIcons(int[] attackIcons) {
-        this.attackIcons = attackIcons;
+    public int[] GetIcons() {
+        return mIcons;
     }
 
     public Tile GetTile() {
@@ -151,57 +118,24 @@ public class Trap {
         this.mName = name;
     }
 
-    public String[] SetDescriptions_defence() {
-        return descriptions_defence;
-    }
 
-    public String[] GetNames_attack() {
-        return names_attack;
-    }
-
-    public String[] GetNames_defence() {
-        return names_defence;
-    }
-
-    public String[] GetDescriptions_attack() {
-        return descriptions_attack;
-    }
-
-    public static int MatchIconToIndex(int id, boolean isOnAttack) {
-        if (isOnAttack) {
-            for (int i = 0; i < attackIcons.length; i++) {
-                if (id == attackIcons[i])
+    public static int MatchIconToIndex(int id) {
+            for (int i = 0; i < mIcons.length; i++) {
+                if (id == mIcons[i])
                     return i;
             }
-        } else {
-            for (int i = 0; i < defenceIcons.length; i++) {
-                if (id == defenceIcons[i])
-                    return i;
-            }
-        }
         return -1;
     }
 
-    public static int MatchIndexToIcon(int iconId, boolean isOnAttack) {
-        if (isOnAttack) {
-            if (iconId < attackIcons.length)
-                return attackIcons[iconId];
-        }
-         else
-            if (iconId < defenceIcons.length)
-                return defenceIcons[iconId];
 
-        return -1;
-    }
-
-    public static int[] GetDefenceCosts() {
-        return defenceCosts;
+    public static int[] GetCosts() {
+        return mCosts;
     }
 
     @Override
     public String toString() {
         if (GetTile() != null)
-            return mDescription + " . in ["+ GetTile().GetRow()+"]["+ GetTile().GetCol()+"]";
+            return mDescription + " . in [" + GetTile().GetRow() + "][" + GetTile().GetCol() + "]";
         else
             return mDescription;
     }

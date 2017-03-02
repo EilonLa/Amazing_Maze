@@ -76,18 +76,23 @@ public class PopItemView extends ArrayAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View vi = view;
-        int size = mData.size();
+        try {
+            int size = mData.size();
             if (vi == null)
                 vi = mInflater.inflate(R.layout.listview_row, null);
-        if (size >  i ){
-            mName = (FontCreator_Logo) vi.findViewById(R.id.name_list);
-            this.mName.setText(mData.get(i)[1].toString());
-            this.mIcon = (ImageView) vi.findViewById(R.id.icon_list);
-            mIcon.setBackgroundResource(Integer.parseInt(mData.get(i)[0].toString()));
-            mCountView = (FontCreator_Logo) vi.findViewById(R.id.count_list);
-            mCountView.setText("X" + mData.get(i)[3].toString());
-            this.mDescription = (FontCreator_Logo) vi.findViewById(R.id.descreption_list);
-            this.mDescription.setText(mData.get(i)[2].toString());
+            if (size > i) {
+                mName = (FontCreator_Logo) vi.findViewById(R.id.name_list);
+                this.mName.setText(mData.get(i)[1].toString());
+                this.mIcon = (ImageView) vi.findViewById(R.id.icon_list);
+                mIcon.setBackgroundResource(Integer.parseInt(mData.get(i)[0].toString()));
+                mCountView = (FontCreator_Logo) vi.findViewById(R.id.count_list);
+                mCountView.setText("X" + mData.get(i)[3].toString());
+                this.mDescription = (FontCreator_Logo) vi.findViewById(R.id.descreption_list);
+                this.mDescription.setText(mData.get(i)[2].toString());
+//            }
+            }
+        }catch (Exception e){
+            return mInflater.inflate(R.layout.listview_row, null);
         }
         return vi;
 

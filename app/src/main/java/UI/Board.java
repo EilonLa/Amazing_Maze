@@ -28,8 +28,10 @@ import DB.DataRowBoard;
 import DB.DataRowTile;
 import DB.DataRowTileTrap;
 import Logic.BFS;
+import Logic.BoardTileObserver;
 import Logic.Tile;
 import Logic.Trap;
+import Logic.User;
 import activities.GamePlay;
 import activities.MainActivity;
 import activities.PopItems;
@@ -72,9 +74,7 @@ public class Board extends ImageView {
     private ImageView mTrapIcon;
     private Tile mEntranceTile;
     private Tile mExitTile;
-    public ArrayList<Tile> mProtectedTiles = new ArrayList<>();
     private ArrayList<DataRowBoard> mDataForRow;
-    private ObjectAnimator objectAnimator;
     private int mBoardId;
     private static LinkedList<Tile> mStepsTile;
     private ArrayList<Tile> mSwipedTiles;
@@ -148,6 +148,10 @@ public class Board extends ImageView {
     }
 
 
+    public Activity GetActivity (){
+        return mActivity;
+    }
+
     public Tile[][] GetTiles() {
         return mTiles;
     }
@@ -159,33 +163,25 @@ public class Board extends ImageView {
         }
     }
 
-    public void SetSwipedTiles(Tile start){
-        if (mSwipedTiles == null){
-            mSwipedTiles = new ArrayList<>();
-            mSwipedTiles.add(start);
-        }
-        else{
-            mSwipedTiles.clear();
-            mSwipedTiles = null;
-        }
+    public void SetSwipedTiles(ArrayList<Tile> list){
+        mSwipedTiles = list;
     }
 
-    public void FireClickByLocation(int x, int y) {
-        for (int i = 0; i < mTiles.length; i++) {
-            for (int j = 0; j < mTiles.length; j++) {
-                if (mTiles[i][j].IsInBounds(x,y) && mSwipedTiles != null && !mSwipedTiles.contains(mTiles[i][j])) {
-                    if (mTiles[i][j].isClickable()) {
-                        mTiles[i][j].callOnClick();
-                        mSwipedTiles.add(mTiles[i][j]);
-                    }
-                    return;
-                }
-            }
-        }
+    public ArrayList<Tile> GetSwipedTiles(){
+        return mSwipedTiles;
+    }
+
+    public static Stack<Tile> GetStack() {
+        return mStack;
+    }
+
+    public static LinkedList<Tile> GetStepsTile() {
+        return mStepsTile;
     }
 
     public void AnimatePath() {
         SetLocationOnScreen();
+        mDIdPlayerWin = true;
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -274,8 +270,6 @@ public class Board extends ImageView {
 
     }
 
-
-
     public static void CompleteShieldLayout(Tile tile, Trap trap) {
         boolean reachedTile = false;;
         for (Tile tempTile : mStepsTile) {
@@ -353,10 +347,6 @@ public class Board extends ImageView {
         mIsWaitingForTrapToPick = flag;
     }
 
-    public void AddStep(Tile tile) {
-        mStepsTile.offer(tile);
-    }
-
     public void SetLocationOnScreen() {
         for (Tile tile : mStepsTile) {
             int[] step = new int[2];
@@ -365,18 +355,6 @@ public class Board extends ImageView {
             tile.SetLocationOnScreen(step);
         }
     }
-
-    public void SetLocationOnScreenForAllTiles(){
-        for (int i = 0; i < NUM_OF_ROWS; i++) {
-            for (int j = 0; j < NUM_OF_COLS; j++) {
-                int[] tempLocation = new int[2];
-                mTiles[i][j].getLocationOnScreen(tempLocation);
-                tempLocation[1] -= (mApprove.getHeight() + mTiles[i][j].getHeight())+10;
-                mTiles[i][j].SetLocationOnScreen(tempLocation);
-            }
-        }
-    }
-
 
     public void SetTrapAnimationTile(final Tile tile, final int delay, final ImageView avatar) {
         mAllThreads.add(
@@ -440,24 +418,6 @@ public class Board extends ImageView {
         mAllThreads.get(mAllThreads.size() - 1).start();
     }
 
-
-    public void RemoveStep(Tile tile) {
-        mStepsTile.remove(tile);
-        NotifyStep(mStepsTile.peekLast());
-    }
-
-    public Tile LastStep() {
-        return mStepsTile.peekLast();
-    }
-
-    public ArrayList<int[]> SetSteps() {
-        ArrayList<int[]> steps = new ArrayList<>();
-        int[] firstStep = new int[2];
-        mEntranceTile.getLocationOnScreen(firstStep);
-        steps.add(firstStep);
-        return steps;
-    }
-
     public void SetGameMode(boolean mGameMode) {
         for (int i = 0; i < NUM_OF_ROWS; i++) {
             for (int j = 0; j < NUM_OF_COLS; j++) {
@@ -477,40 +437,17 @@ public class Board extends ImageView {
             mTiles[row][col].setClickable(true);
             if (row > 0 && !mTiles[row - 1][col].IsStepped()) {
                 mTiles[row - 1][col].setClickable(true);
-                Log.i("NotifyStep", "TILE CLICKABLE = " + mTiles[row - 1][col].toString());
             }
             if (col > 0 && !mTiles[row][col - 1].IsStepped()) {
                 mTiles[row][col - 1].setClickable(true);
-                Log.i("NotifyStep", "TILE CLICKABLE = " + mTiles[row][col - 1].toString());
             }
             if (row < NUM_OF_ROWS - 1 && !mTiles[row + 1][col].IsStepped()) {
                 mTiles[row + 1][col].setClickable(true);
-                Log.i("NotifyStep", "TILE CLICKABLE = " + mTiles[row + 1][col].toString());
             }
             if (col < NUM_OF_COLS - 1 && !mTiles[row][col + 1].IsStepped()) {
                 mTiles[row][col + 1].setClickable(true);
-                Log.i("NotifyStep", "TILE CLICKABLE = " + mTiles[row][col + 1].toString());
             }
         }
-    }
-
-
-    public boolean NeighboursClicked(Tile tile) {
-        int row = tile.GetRow();
-        int col = tile.GetCol();
-        if (tile.IsEntrance())
-            return true;
-
-        if (row > 0 && mTiles[row - 1][col].IsStepped())
-            return true;
-        if (col > 0 && mTiles[row][col - 1].IsStepped())
-            return true;
-        if (row < NUM_OF_ROWS - 1 && mTiles[row + 1][col].IsStepped())
-            return true;
-        if (col < NUM_OF_COLS - 1 && mTiles[row][col + 1].IsStepped())
-            return true;
-
-        return false;
     }
 
     public void SetAllBoardNotClickable() {
@@ -530,10 +467,6 @@ public class Board extends ImageView {
         });
     }
 
-    public void InsertIntoStack(Tile tile) {
-        mStack.push(tile);
-    }
-
     public void PopFromStack() {
         if (!mStack.isEmpty()) {
             Tile temp = mStack.pop();
@@ -543,18 +476,6 @@ public class Board extends ImageView {
                 temp.SetFromStack(false);
             }
         }
-    }
-
-    public boolean DIdPlayerWin() {
-        return mDIdPlayerWin;
-    }
-
-    public void DIdPlayerWin(boolean dIdPlayerWin) {
-        this.mDIdPlayerWin = dIdPlayerWin;
-    }
-
-    public LinearLayout GetBoard() {
-        return mBoardLayout;
     }
 
     public boolean HasEntrance() {
@@ -584,7 +505,7 @@ public class Board extends ImageView {
     }
 
     public LinearLayout SetMaze() {
-        Log.i("SetMaze", "start");
+        BoardTileObserver observer = new BoardTileObserver(this);
         LinearLayout layout = (LinearLayout) mActivity.findViewById(mBoardId);
         ArrayList<LinearLayout> rows = new ArrayList<>();
         mTiles = new Tile[NUM_OF_ROWS][NUM_OF_COLS];
@@ -592,7 +513,7 @@ public class Board extends ImageView {
             for (int i = 0; i < NUM_OF_ROWS; i++) {
                 rows.add(new LinearLayout(mActivity));
                 for (int j = 0; j < NUM_OF_COLS; j++) {
-                    mTiles[i][j] = new Tile(mActivity, i, j, this);
+                    mTiles[i][j] = new Tile( i, j, observer);
                     GridLayout.LayoutParams param = new GridLayout.LayoutParams(GridLayout.spec(i), GridLayout.spec(j));
                     Display display = mActivity.getWindowManager().getDefaultDisplay();
                     Point size = new Point();
@@ -610,7 +531,7 @@ public class Board extends ImageView {
                 rows.add(new LinearLayout(mActivity));
                 for (int j = 0; j < NUM_OF_COLS; j++) {
                     DataRowBoard data = getDataForCoord(i, j);
-                    mTiles[data.GetRow()][data.GetCol()] = new Tile(mActivity, data.GetRow(), data.GetCol(), this);
+                    mTiles[data.GetRow()][data.GetCol()] = new Tile(data.GetRow(), data.GetCol(), observer);
                     DataRowTile dataRowTile = MainActivity.mDataBase.GetTileById(data.GetTileId());
                     if (dataRowTile.GetIsEntrance() == 1) {
                         mTiles[data.GetRow()][data.GetCol()].SetIsEntrance(true);
@@ -648,6 +569,10 @@ public class Board extends ImageView {
         return layout;
     }
 
+    public void SetIsWaitingForTrapToPick(boolean isWaitingForTrapToPick) {
+        mIsWaitingForTrapToPick = isWaitingForTrapToPick;
+    }
+
     public DataRowBoard getDataForCoord(int row, int col) {
         for (DataRowBoard data : mDataForRow) {
             if (data.GetRow() == row && data.GetCol() == col)
@@ -667,19 +592,19 @@ public class Board extends ImageView {
             mExitTile.SetVisited(false);
     }
 
-    public Tile getmEntranceTile() {
+    public Tile GetEntranceTile() {
         return mEntranceTile;
     }
 
-    public void setmEntranceTile(Tile mEntranceTile) {
+    public void SetEntranceTile(Tile mEntranceTile) {
         this.mEntranceTile = mEntranceTile;
     }
 
-    public Tile getmExitTile() {
+    public Tile GetExitTile() {
         return mExitTile;
     }
 
-    public void setmExitTile(Tile mExitTile) {
+    public void SetExitTile(Tile mExitTile) {
         this.mExitTile = mExitTile;
     }
 
@@ -687,27 +612,31 @@ public class Board extends ImageView {
         return mBoardLayout;
     }
 
-    public boolean ismHasExit() {
+    public boolean IsHasExit() {
         return mHasExit;
     }
 
-    public void setmHasExit(boolean mHasExit) {
+    public void SetHasExit(boolean mHasExit) {
         this.mHasExit = mHasExit;
     }
 
-    public boolean ismExitActivated() {
+    public boolean IsExitActivated() {
         return mExitActivated;
     }
 
-    public void setmExitActivated(boolean mExitActivated) {
+    public void SetExitActivated(boolean mExitActivated) {
         this.mExitActivated = mExitActivated;
     }
 
-    public boolean ismEntranceActivated() {
+    public boolean IsEntranceActivated() {
         return mEntranceActivated;
     }
 
-    public void setmEntranceActivated(boolean mEntranceActivated) {
+
+    public Button GetApproveBtn(){
+        return mApprove;
+    }
+    public void SetEntranceActivated(boolean mEntranceActivated) {
         this.mEntranceActivated = mEntranceActivated;
     }
 
@@ -737,7 +666,7 @@ public class Board extends ImageView {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            SaveBoard();
+                            SaveBoard(MainActivity.mUser);
                             //TODO: FIREBASE
                         }
                     }));
@@ -750,8 +679,7 @@ public class Board extends ImageView {
             });
     }
 
-    public void SaveBoard(){
-
+    public void SaveBoard(final User user){
        MainActivity.mDataBaseManager.addThread(
                new Thread(new Runnable() {
             @Override
@@ -764,28 +692,32 @@ public class Board extends ImageView {
                     }
                 });
                 ArrayList<DataRowBoard> rowsForBoard = new ArrayList<>();
-                MainActivity.mDataBase.DeleteUserBoard(MainActivity.mUser.GetId());
+                MainActivity.mDataBase.DeleteUserBoard(user.GetId());
                 for (int i = 0; i < NUM_OF_ROWS; i++) {
                     for (int j = 0; j < NUM_OF_COLS; j++) {
                         Tile tile = mTiles[i][j];
-                        int isWall = 0;
-                        int isEntrance = 0;
-                        int isExit = 0;
-                        if (tile.IsWall())
-                            isWall = 1;
-                        if (tile.IsEntrance())
-                            isEntrance = 1;
-                        if (tile.IsExit())
-                            isExit = 1;
-                        MainActivity.mDataBase.AddRow_Tiles(new DataRowTile(i, j, isWall, isEntrance, isExit));
-                        int lastTileId = MainActivity.mDataBase.GetLastTileIdFromDB();
-                        if (tile.GetTrap() != null) {
-                            MainActivity.mDataBase.AddRow_TileTrap(new DataRowTileTrap(tile.GetTrap().GetTrapIndex(), lastTileId));
+                        if (tile != null) {
+                            int isWall = 0;
+                            int isEntrance = 0;
+                            int isExit = 0;
+                            if (tile.IsWall())
+                                isWall = 1;
+                            if (tile.IsEntrance())
+                                isEntrance = 1;
+                            if (tile.IsExit())
+                                isExit = 1;
+                            MainActivity.mDataBase.AddRow_Tiles(new DataRowTile(i, j, isWall, isEntrance, isExit));//tile
+                            int lastTileId = MainActivity.mDataBase.GetLastTileIdFromDB();
+                            if (tile.GetTrap() != null) {
+                                MainActivity.mDataBase.AddRow_TileTrap(new DataRowTileTrap(tile.GetTrap().GetTrapIndex(), lastTileId));//save trap_tile
+                            }
+                            rowsForBoard.add(new DataRowBoard(user.GetId(), i, j, lastTileId));//save board
                         }
-                        rowsForBoard.add(new DataRowBoard(MainActivity.mUser.GetId(), i, j, lastTileId));
                     }
                 }
-                MainActivity.mDataBase.AddRows_Board(rowsForBoard);
+                if (rowsForBoard.size() > 0) {
+                    MainActivity.mDataBase.AddRows_Board(rowsForBoard);
+                }
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
