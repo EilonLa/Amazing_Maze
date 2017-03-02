@@ -34,18 +34,16 @@ public class Tile extends ImageView {
     private boolean mTrapFlag = false;
     private int mRow;
     private int mCol;
-    private Board mBoard;
     private Tile mSelf;
-    private Activity mActivity;
     private Trap mTrap;
     private Trap mCounterTrap;
     private int[] mLocationOnScreen;
+    private BoardTileObserver mObserver;
 
-    public Tile(final Activity activity, int row, int col, final Board board) {
-        super(activity);
-        this.mActivity = activity;
+    public Tile(int row, int col, BoardTileObserver observer) {
+        super(observer.GetActivity());
+        mObserver = observer;
         SetIcon(mBrickIconId);
-        this.mBoard = board;
         this.mRow = row;
         this.mCol = col;
         this.mSelf = this;
@@ -60,20 +58,20 @@ public class Tile extends ImageView {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     if (isClickable()) {
                         callOnClick();
-                        mBoard.SetLocationOnScreenForAllTiles();
-                        mBoard.SetSwipedTiles(mSelf);
+                        mObserver.SetLocationOnScreenForAllTiles();
+                        mObserver.SetSwipedTiles(mSelf);
                     }
                     return true;
                 }
 
                 if (motionEvent.getAction() == MotionEvent.ACTION_MOVE ) {
-                        mBoard.FireClickByLocation(x, y);
+                        mObserver.FireClickByLocation(x, y);
                         return true;
                 }
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP ) {
-                        mBoard.FireClickByLocation(x, y);
+                        mObserver.FireClickByLocation(x, y);
                     if (isClickable()) {
-                        mBoard.SetSwipedTiles(mSelf);
+                        mObserver.SetSwipedTiles(mSelf);
                     }
                         return true;
                 }
@@ -86,7 +84,7 @@ public class Tile extends ImageView {
             @Override
             public void onClick(View view) {
                 if (!mFromStack) {//tile is not called from the stack.pop() call
-                    mBoard.InsertIntoStack(mSelf);
+                    mObserver.InsertIntoStack(mSelf);
                 }
                 if (mGameMode) {//the tile is clicked in game mode
                     if (mTrapFlag && mStepped) {//if choosing to place a trap and the tile is part of the path
@@ -96,21 +94,21 @@ public class Tile extends ImageView {
                         } else {
                             SetIcon(mProtectedIcon);
                             //ApproveTrapDialog();
-                            mBoard.SetTrapFlag(false);
+                            mObserver.SetTrapFlag(false);
                             mProtected = true;
                         }
 
                     } else {//if game mode is on and walking the path
                         if (!mIsWall) {//road tile
                             if (!mStepped) {//tile is not stepped
-                                if (mBoard.NeighboursClicked(mSelf)) {//if the tile's neighbours are clicked
+                                if (mObserver.NeighboursClicked(mSelf)) {//if the tile's neighbours are clicked
                                     SetIcon(mRoadTile);
                                     mStepped = true;
-                                    mBoard.AddStep(mSelf);//add the step to the path list in the board
-                                    mBoard.NotifyStep(mSelf);//set the next tiles clickable
+                                    mObserver.AddStep(mSelf);//add the step to the path list in the board
+                                    mObserver.NotifyStep(mSelf);//set the next tiles clickable
                                 }
                             } else {//cancle last step
-                                if (mBoard.LastStep() == mSelf) {//pnly last step is possible
+                                if (mObserver.LastStep() == mSelf) {//pnly last step is possible
                                     if (!mIsEntrance && !mIsExit)
                                         SetIcon(mFloorIconId);
                                     else if (mIsEntrance)
@@ -118,14 +116,9 @@ public class Tile extends ImageView {
                                     else if (mIsExit)
                                         SetIcon(R.mipmap.exit_icon);
                                     mStepped = false;
-                                    mBoard.RemoveStep(mSelf);
+                                    mObserver.RemoveStep(mSelf);
                                 } else {
-                                    activity.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getContext(),ONE_STEP_TAG , Toast.LENGTH_LONG).show();
-                                        }
-                                    });
+                                    mObserver.MakeToast(ONE_STEP_TAG);
                                 }
                             }
                         }
@@ -133,35 +126,35 @@ public class Tile extends ImageView {
                 } else {//create game mode
                     if (mIsWall) {//tile is a wall
                         if (mTrap != null) {//if tile has a trap, show it
-                            mBoard.SetTrapIcon(mTrap.GetIconId());
+                            mObserver.SetTrapIcon(mTrap.GetIconId());
                             SetIcon(mTrap.GetIconId());
                         }
                         else {
-                            mBoard.SetTrapIcon(0);
+                            mObserver.SetTrapIcon(0);
                             SetIcon(mFloorIconId);
                         }
                         mIsWall = false;
                         if (IsBoundary()) {//if tile is on one of the edges
-                            if (!mBoard.HasEntrance() && mBoard.ismEntranceActivated()) {//board has no entrance and setEntrance is clicked
+                            if (!mObserver.HasEntrance() && mObserver.IsEntranceActivated()) {//board has no entrance and setEntrance is clicked
                                 mIsEntrance = true;
                                 mIsExit = false;
                                 SetIcon(R.mipmap.entrance_icon);
-                                mBoard.setmEntranceActivated(false);
-                                mBoard.SetHasEntrance(true);
-                                mBoard.setmEntranceTile(mSelf);
-                                if (mBoard.getmExitTile() == mSelf) {
-                                    mBoard.setmExitTile(null);
+                                mObserver.SetEntranceActivated(false);
+                                mObserver.SetHasEntrance(true);
+                                mObserver.SetEntranceTile(mSelf);
+                                if (mObserver.GetExitTile() == mSelf) {
+                                    mObserver.SetExitTile(null);
                                 }
                             }
-                            if (!mBoard.ismHasExit() && mBoard.ismExitActivated()) {//board has no exit and setExit is activated
+                            if (!mObserver.IsHasExit() && mObserver.IsExitActivated()) {//board has no exit and setExit is activated
                                 mIsExit = true;
                                 mIsEntrance = false;
-                                mBoard.setmExitActivated(false);
-                                mBoard.setmHasExit(true);
+                                mObserver.SetExitActivated(false);
+                                mObserver.SetHasExit(true);
                                 SetIcon(R.mipmap.exit_icon);
-                                mBoard.setmExitTile(mSelf);
-                                if (mBoard.getmEntranceTile() == mSelf) {
-                                    mBoard.setmEntranceTile(null);
+                                mObserver.SetExitTile(mSelf);
+                                if (mObserver.GetEntranceTile() == mSelf) {
+                                    mObserver.SetEntranceTile(null);
                                 }
                             }
                         }
@@ -172,16 +165,16 @@ public class Tile extends ImageView {
                             SetTrap(null);
                         }
                         if (mIsEntrance) {
-                            mBoard.SetHasEntrance(false);
+                            mObserver.SetHasEntrance(false);
                             mIsEntrance = false;
-                            mBoard.setmEntranceTile(null);
+                            mObserver.SetEntranceTile(null);
                         }
                         if (mIsExit) {
-                            mBoard.setmHasExit(false);
+                            mObserver.SetHasExit(false);
                             mIsExit = false;
-                            mBoard.setmExitTile(null);
+                            mObserver.SetExitTile(null);
                         }
-                        mBoard.SetTrapIcon(0);
+                        mObserver.SetTrapIcon(0);
                         SetIcon(mBrickIconId);
                         mIsWall = true;
                     }
@@ -198,7 +191,7 @@ public class Tile extends ImageView {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        mBoard.SetTrapFlag(false);
+                        mObserver.SetTrapFlag(false);
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
                         if (!mSelf.GetTrap().IsAttack())
@@ -208,7 +201,7 @@ public class Tile extends ImageView {
                 }
             }
         };
-        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mObserver.GetActivity());
         builder.setMessage("Are you sure you want to add a trap at [" + mRow + "]" + "[" + mCol + "]?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
 
@@ -247,7 +240,7 @@ public class Tile extends ImageView {
     }
 
     public void SetTrap(Trap trap) {
-        if (!mBoard.IsGameMode()) {
+        if (!mObserver.IsGameMode()) {
             this.mTrap = trap;
             if (mTrap != null) {
                 mTrap.SetTile(mSelf);
@@ -363,7 +356,7 @@ public class Tile extends ImageView {
     }
 
     public void SetIcon(final int iconId) {
-        mActivity.runOnUiThread(new Runnable() {
+        mObserver.GetActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 setBackgroundResource(iconId);
