@@ -6,6 +6,8 @@ import android.view.View;
 
 import com.example.cdv.amazingmaze.R;
 
+import UI.Board;
+
 /**
  * Created by אילון on 26/01/2017.
  */
@@ -18,7 +20,7 @@ public class CreateAMaze extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_maze);
-        MainActivity.mUser.SetBoard(this, R.id.activity_create_maze_board);
+        MainActivity.mUser.SetBoard(new Board(this,MainActivity.mUser.GetListDataBoardFromFireBase(),R.id.activity_create_maze_board,false));
 
         this.mSetEntrance = findViewById(R.id.set_entrance);
         mSetEntrance.setOnClickListener(new View.OnClickListener() {

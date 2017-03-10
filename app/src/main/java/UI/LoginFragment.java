@@ -10,9 +10,6 @@ import android.widget.Button;
 
 import com.example.cdv.amazingmaze.R;
 
-import activities.SignInScreen;
-import activities.SignUpScreen;
-
 /**
  * Created by אילון on 29/01/2017.
  */
@@ -41,18 +38,15 @@ public class LoginFragment extends Fragment {
         mSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity().getApplicationContext(), SignInScreen.class);
-                intent.putExtra("mSignIn",true);
-                startActivity(intent);
+
+                getActivity().getFragmentManager().beginTransaction().add(R.id.log_container,new SignInFragment()).commit();
             }
         });
         mSignUp = (Button) getActivity().findViewById(R.id.activity_main_sign_up);
         mSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity().getApplicationContext(), SignUpScreen.class);
-                intent.putExtra("mSignUp",false);
-                startActivity(intent);
+                getActivity().getFragmentManager().beginTransaction().add(R.id.log_container,new SignUpFragment()).commit();
             }
         });
     }

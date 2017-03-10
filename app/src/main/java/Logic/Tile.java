@@ -1,12 +1,10 @@
 package Logic;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.example.cdv.amazingmaze.R;
 
@@ -39,6 +37,8 @@ public class Tile extends ImageView {
     private Trap mCounterTrap;
     private int[] mLocationOnScreen;
     private BoardTileObserver mObserver;
+
+    private String mTileId;
 
     public Tile(int row, int col, BoardTileObserver observer) {
         super(observer.GetActivity());
@@ -207,6 +207,14 @@ public class Tile extends ImageView {
 
     }
 
+    public String GetTileId() {
+        return mTileId;
+    }
+
+    public void SetTileId(String tileId) {
+        this.mTileId = tileId;
+    }
+
     public void SetLocationOnScreen(int[] location){
         mLocationOnScreen = location;
     }
@@ -237,6 +245,14 @@ public class Tile extends ImageView {
 
     public Trap GetTrap() {
         return mTrap;
+    }
+
+    public int GetTrapIndex(){
+        if (mTrap != null)
+            return mTrap.GetTrapIndex();
+        else{
+            return -1;
+        }
     }
 
     public void SetTrap(Trap trap) {

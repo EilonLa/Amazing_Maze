@@ -5,23 +5,23 @@ package DB;
  */
 
 public class DataRowBoard {
-    private int mId;
+    private String mId;
     private int mRow;
     private int mCol;
-    private int mTileId;
+    private String mTileId;
 
-    public DataRowBoard (int userId, int row,int col, int tileId){
+    public DataRowBoard (String userId, int row,int col, String tileId){
         this.mId = userId;
         this.mRow = row;
         this.mCol = col;
         this.mTileId = tileId;
     }
 
-    public int GetId() {
+    public String GetId() {
         return mId;
     }
 
-    public void SetId(int id) {
+    public void SetId(String id) {
         this.mId = id;
     }
 
@@ -41,11 +41,11 @@ public class DataRowBoard {
         this.mCol = col;
     }
 
-    public int GetTileId() {
+    public String GetTileId() {
         return mTileId;
     }
 
-    public void SetTileId(int tileId) {
+    public void SetTileId(String tileId) {
         this.mTileId = tileId;
     }
 }

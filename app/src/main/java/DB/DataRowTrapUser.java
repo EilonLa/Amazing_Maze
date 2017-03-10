@@ -5,9 +5,9 @@ package DB;
  */
 
 public class DataRowTrapUser {
-    private int mUserId;
+    private String mUserId;
     private int mTrapId;
-    public DataRowTrapUser (int userId,int trapId){
+    public DataRowTrapUser (String userId,int trapId){
         this.mUserId = userId;
         this.mTrapId = trapId;
     }
@@ -20,11 +20,11 @@ public class DataRowTrapUser {
         this.mTrapId = trapId;
     }
 
-    public int GetUserId() {
+    public String GetUserId() {
         return mUserId;
     }
 
-    public void SetUserId(int userId) {
+    public void SetUserId(String userId) {
         this.mUserId = userId;
     }
 }

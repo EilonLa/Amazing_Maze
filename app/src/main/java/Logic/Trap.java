@@ -118,6 +118,125 @@ public class Trap {
         this.mName = name;
     }
 
+    public static int getFIRE() {
+        return FIRE;
+    }
+
+    public static int getFiveSteps() {
+        return FIVE_STEPS;
+    }
+
+    public static int getTenSteps() {
+        return TEN_STEPS;
+    }
+
+    public static int getTwentySteps() {
+        return TWENTY_STEPS;
+    }
+
+    public static int getFortySteps() {
+        return FORTY_STEPS;
+    }
+
+    public static int getCostFor5StepShield() {
+        return COST_FOR_5_STEP_SHIELD;
+    }
+
+    public static int getCostFor10StepShield() {
+        return COST_FOR_10_STEP_SHIELD;
+    }
+
+    public static int getCostFor20StepShield() {
+        return COST_FOR_20_STEP_SHIELD;
+    }
+
+    public static int getCostFor40StepShield() {
+        return COST_FOR_40_STEP_SHIELD;
+    }
+
+    public static int getCostForFireball() {
+        return COST_FOR_FIREBALL;
+    }
+
+    public static int[] getmCosts() {
+        return mCosts;
+    }
+
+    public static void setmCosts(int[] mCosts) {
+        Trap.mCosts = mCosts;
+    }
+
+    public static int[] getmIcons() {
+        return mIcons;
+    }
+
+    public static void setmIcons(int[] mIcons) {
+        Trap.mIcons = mIcons;
+    }
+
+    public String[] getmDescriptions() {
+        return mDescriptions;
+    }
+
+    public String[] getmNames() {
+        return mNames;
+    }
+
+    public Tile getmTile() {
+        return mTile;
+    }
+
+    public void setmTile(Tile mTile) {
+        this.mTile = mTile;
+    }
+
+    public int getmIconId() {
+        return mIconId;
+    }
+
+    public void setmIconId(int mIconId) {
+        this.mIconId = mIconId;
+    }
+
+    public boolean ismIsAttack() {
+        return mIsAttack;
+    }
+
+    public void setmIsAttack(boolean mIsAttack) {
+        this.mIsAttack = mIsAttack;
+    }
+
+    public String getmDescription() {
+        return mDescription;
+    }
+
+    public void setmDescription(String mDescription) {
+        this.mDescription = mDescription;
+    }
+
+    public String getmName() {
+        return mName;
+    }
+
+    public void setmName(String mName) {
+        this.mName = mName;
+    }
+
+    public int getmPrice() {
+        return mPrice;
+    }
+
+    public void setmPrice(int mPrice) {
+        this.mPrice = mPrice;
+    }
+
+    public int getmTrapIndex() {
+        return mTrapIndex;
+    }
+
+    public void setmTrapIndex(int mTrapIndex) {
+        this.mTrapIndex = mTrapIndex;
+    }
 
     public static int MatchIconToIndex(int id) {
             for (int i = 0; i < mIcons.length; i++) {

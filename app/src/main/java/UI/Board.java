@@ -667,7 +667,6 @@ public class Board extends ImageView {
                         @Override
                         public void run() {
                             SaveBoard(MainActivity.mUser);
-                            //TODO: FIREBASE
                         }
                     }));
         } else
@@ -691,6 +690,7 @@ public class Board extends ImageView {
                         mActivity.findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                     }
                 });
+                MainActivity.mFireBaseOperator.SaveBoardToFireBase(Board.this,MainActivity.mUser);
                 ArrayList<DataRowBoard> rowsForBoard = new ArrayList<>();
                 MainActivity.mDataBase.DeleteUserBoard(user.GetId());
                 for (int i = 0; i < NUM_OF_ROWS; i++) {
@@ -706,12 +706,13 @@ public class Board extends ImageView {
                                 isEntrance = 1;
                             if (tile.IsExit())
                                 isExit = 1;
-                            MainActivity.mDataBase.AddRow_Tiles(new DataRowTile(i, j, isWall, isEntrance, isExit));//tile
-                            int lastTileId = MainActivity.mDataBase.GetLastTileIdFromDB();
+                            String tileId = tile.GetTileId();
+                            MainActivity.mDataBase.AddRow_Tiles(new DataRowTile(tileId,i, j, isWall, isEntrance, isExit));//tile
+
                             if (tile.GetTrap() != null) {
-                                MainActivity.mDataBase.AddRow_TileTrap(new DataRowTileTrap(tile.GetTrap().GetTrapIndex(), lastTileId));//save trap_tile
+                                MainActivity.mDataBase.AddRow_TileTrap(new DataRowTileTrap(tile.GetTrap().GetTrapIndex(),tileId ));//save trap_tile
                             }
-                            rowsForBoard.add(new DataRowBoard(user.GetId(), i, j, lastTileId));//save board
+                            rowsForBoard.add(new DataRowBoard(user.GetId(), i, j, tileId));//save board
                         }
                     }
                 }

@@ -9,12 +9,12 @@ import java.util.ArrayList;
 
 public class DataRowUser {
     private String mUserName;
-    private int mUserId;
+    private String mUserId;
     private String mPassword;
     private int mCoins;
     private ArrayList<Integer> mTrapIndexes;
 
-    public DataRowUser(int userId, String userName, String password, int coins, ArrayList<Integer> trapIndexes) {
+    public DataRowUser(String userId, String userName, String password, int coins, ArrayList<Integer> trapIndexes) {
         this.mUserId = userId;
         this.mUserName = userName;
         this.mPassword = password;
@@ -45,11 +45,11 @@ public class DataRowUser {
         this.mUserName = userName;
     }
 
-    public int GetUserId() {
+    public String GetUserId() {
         return mUserId;
     }
 
-    public void SetUserId(int userId) {
+    public void SetUserId(String userId) {
         this.mUserId = userId;
     }
 

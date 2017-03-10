@@ -5,19 +5,19 @@ package DB;
  */
 
 public class DataRowTileTrap {
-    private int mTileId;
+    private String mTileId;
     private int mTrapId;
 
-    public DataRowTileTrap (int trapId,int tileId){
+    public DataRowTileTrap (int trapId,String tileId){
         this.mTileId = tileId;
         this.mTrapId = trapId;
     }
 
-    public int GetTileId() {
+    public String GetTileId() {
         return mTileId;
     }
 
-    public void SetTileId(int tileId) {
+    public void SetTileId(String tileId) {
         this.mTileId = tileId;
     }
 

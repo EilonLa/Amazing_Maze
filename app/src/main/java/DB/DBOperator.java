@@ -2,6 +2,7 @@ package DB;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -22,9 +23,9 @@ public class DBOperator extends SQLiteOpenHelper {
     public static final int DB_VERSION = 1;
     public static final String DB_NAME = "AmazingMaze";
 
-    public Activity mActivity;
+    public Context mActivity;
 
-    public DBOperator(Activity context) {
+    public DBOperator(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.mActivity = context;
     }
@@ -69,6 +70,7 @@ public class DBOperator extends SQLiteOpenHelper {
     public void AddRow_User(DataRowUser dr) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(FeedReaderContract.FeedData.COLUMN_NAME_ID, dr.GetUserId());
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_USER_NAME, dr.GetUserName());
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_PASSWORD, dr.GetPassword());
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_COINS, dr.GetCoins());
@@ -90,6 +92,7 @@ public class DBOperator extends SQLiteOpenHelper {
     public void AddRow_Tiles(DataRowTile dr) {//2
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(FeedReaderContract.FeedData.COLUMN_NAME_TILE_ID, dr.GetId());
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_ROW, dr.GetRow());
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_COL, dr.GetCol());
         values.put(FeedReaderContract.FeedData.COLUMN_NAME_IS_WALL, dr.GetIsWall());
@@ -185,7 +188,7 @@ public class DBOperator extends SQLiteOpenHelper {
 
     }
 
-    public void UpdateCoins(int coins, int userId){
+    public void UpdateCoins(int coins, String userId){
         closeConnection();
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE " +FeedReaderContract.FeedData.TABLE_NAME_USER+
@@ -209,7 +212,7 @@ public class DBOperator extends SQLiteOpenHelper {
 
             Cursor c = db.rawQuery(query, null);
             if (c != null && c.moveToFirst()) {
-                row = new DataRowUser(c.getInt(0), c.getString(1), c.getString(2), c.getInt(3),null);
+                row = new DataRowUser(c.getString(0), c.getString(1), c.getString(2), c.getInt(3),null);
             }
             c.close();
             if (row != null)
@@ -224,10 +227,10 @@ public class DBOperator extends SQLiteOpenHelper {
         return null;
     }
 
-    public int GetLastTileIdFromDB() {
+    public String GetLastTileIdFromDB() {
         closeConnection();
         SQLiteDatabase db = null;
-        int id = 0;
+        String id = "";
         try {
             db = getReadableDatabase();
             String query =
@@ -236,7 +239,7 @@ public class DBOperator extends SQLiteOpenHelper {
 
             Cursor c = db.rawQuery(query, null);
             if (c != null && c.moveToFirst()) {
-                id =  c.getInt(0);
+                id =  c.getString(0);
             }
             c.close();
             return id;
@@ -244,7 +247,7 @@ public class DBOperator extends SQLiteOpenHelper {
             Log.i("", "creating data base");
             onCreate(db);
         }
-        return -1;
+        return "";
     }
 
     public DataRowUser GetLastUserFromDB() {
@@ -262,7 +265,7 @@ public class DBOperator extends SQLiteOpenHelper {
                     c.close();
                     return null;
                 }
-                row = new DataRowUser(c.getInt(0), c.getString(1), c.getString(2), c.getInt(3),null);
+                row = new DataRowUser(c.getString(0), c.getString(1), c.getString(2), c.getInt(3),null);
             }
             c.close();
             row.SetTrapIndexes(GetUserTraps(row.GetUserId()));
@@ -274,7 +277,7 @@ public class DBOperator extends SQLiteOpenHelper {
         return null;
     }
 
-    public DataRowUser GetLastUserFromDB(int lastUserId) {
+    public DataRowUser GetLastUserFromDB(String lastUserId) {
         closeConnection();
         SQLiteDatabase db = null;
         try {
@@ -291,7 +294,7 @@ public class DBOperator extends SQLiteOpenHelper {
                     return null;
                 }
                 Log.i("coins", ""+c.getInt(3) );
-                row = new DataRowUser(c.getInt(0), c.getString(1), c.getString(2), c.getInt(3),null);
+                row = new DataRowUser(c.getString(0), c.getString(1), c.getString(2), c.getInt(3),null);
             }
             c.close();
             row.SetTrapIndexes(GetUserTraps(row.GetUserId()));
@@ -304,7 +307,7 @@ public class DBOperator extends SQLiteOpenHelper {
     }
 
 
-    public ArrayList<Integer> GetUserTraps(int userId) {
+    public ArrayList<Integer> GetUserTraps(String userId) {
         SQLiteDatabase db = null;
         ArrayList<Integer> rows = new ArrayList<>();
         try {
@@ -354,7 +357,7 @@ public class DBOperator extends SQLiteOpenHelper {
         return null;
     }
 
-    public DataRowTile GetTileById(int tileId) {
+    public DataRowTile GetTileById(String tileId) {
         SQLiteDatabase db = null;
         try {
             db = getReadableDatabase();
@@ -366,7 +369,7 @@ public class DBOperator extends SQLiteOpenHelper {
             Cursor c = db.rawQuery(query, null);
 
             if (c != null && c.moveToFirst()) {
-                row  = new DataRowTile(c.getInt(1), c.getInt(2),c.getInt(3),c.getInt(4),c.getInt(5));
+                row  = new DataRowTile(c.getString(1),c.getInt(2), c.getInt(3),c.getInt(4),c.getInt(5),c.getInt(6));
             }
             c.close();
 
@@ -378,7 +381,7 @@ public class DBOperator extends SQLiteOpenHelper {
         return null;
     }
 
-    public ArrayList<DataRowBoard> GetBoardByUserId(int userId) {
+    public ArrayList<DataRowBoard> GetBoardByUserId(String userId) {
         SQLiteDatabase db = null;
         try {
             db = getReadableDatabase();
@@ -390,9 +393,9 @@ public class DBOperator extends SQLiteOpenHelper {
             Cursor c = db.rawQuery(query, null);
 
             if (c != null && c.moveToFirst()) {
-                rows.add(new DataRowBoard(c.getInt(0),c.getInt(1),c.getInt(2),c.getInt(3)));
+                rows.add(new DataRowBoard(c.getString(0),c.getInt(1),c.getInt(2),c.getString(3)));
                 while (c.moveToNext())
-                    rows.add(new DataRowBoard(c.getInt(0),c.getInt(1),c.getInt(2),c.getInt(3)));
+                    rows.add(new DataRowBoard(c.getString(0),c.getInt(1),c.getInt(2),c.getString(3)));
             }
             c.close();
 
@@ -405,7 +408,7 @@ public class DBOperator extends SQLiteOpenHelper {
         return null;
     }
 
-    public DataRowTileTrap GetTrapByTileId(int tileId) {
+    public DataRowTileTrap GetTrapByTileId(String tileId) {
         SQLiteDatabase db = null;
         try {
             db = getReadableDatabase();
@@ -417,7 +420,7 @@ public class DBOperator extends SQLiteOpenHelper {
             Cursor c = db.rawQuery(query, null);
 
             if (c != null && c.moveToFirst()) {
-                row  = new DataRowTileTrap(c.getInt(0), c.getInt(1));
+                row  = new DataRowTileTrap(c.getInt(0), c.getString(1));
             }
             c.close();
 
@@ -428,7 +431,7 @@ public class DBOperator extends SQLiteOpenHelper {
         }
         return null;
     }
-    public void DeleteUserBoard(int userId){
+    public void DeleteUserBoard(String userId){
         SQLiteDatabase db = null;
         try {
             db = getReadableDatabase();

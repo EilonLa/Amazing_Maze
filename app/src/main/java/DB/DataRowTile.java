@@ -5,14 +5,15 @@ package DB;
  */
 
 public class DataRowTile {
-    private int mId;
+    private String mId;
     private int mRow;
     private int mCol;
     private int mIsWall;
     private int mIsEntrance;
     private int mIsExit;
 
-    public DataRowTile (int row, int col,int isWall, int isEntrance, int isExit){
+    public DataRowTile (String id,int row, int col,int isWall, int isEntrance, int isExit){
+        this.mId = id;
         this.mRow = row;
         this.mCol = col;
         this.mIsWall = isWall;
@@ -44,11 +45,11 @@ public class DataRowTile {
         this.mIsWall = isWall;
     }
 
-    public int GetId() {
+    public String GetId() {
         return mId;
     }
 
-    public void SetId(int id) {
+    public void SetId(String id) {
         this.mId = id;
     }
 

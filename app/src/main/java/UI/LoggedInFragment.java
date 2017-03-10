@@ -15,7 +15,7 @@ import activities.MainActivity;
  * Created by אילון on 29/01/2017.
  */
 
-public class SignedInFragment extends Fragment {
+public class LoggedInFragment extends Fragment {
     private TextView mWelcomeUser;
 
 
