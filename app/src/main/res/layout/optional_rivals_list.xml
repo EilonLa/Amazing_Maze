@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:background="#a0522d"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:background="#a0522d"
+        android:layout_alignParentRight="true"
+        android:id="@android:id/list"
+        style="@style/Widget.AppCompat.ListView.Menu"
+        android:headerDividersEnabled="true"
+        android:footerDividersEnabled="true"
+        android:dividerHeight="10dp" />
+</RelativeLayout>

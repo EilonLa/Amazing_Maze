@@ -1,13 +1,10 @@
 package UI;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -24,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
 
+import DB.DataBaseManager;
 import DB.DataRowBoard;
 import DB.DataRowTile;
 import DB.DataRowTileTrap;
@@ -32,10 +30,10 @@ import Logic.BoardTileObserver;
 import Logic.Tile;
 import Logic.Trap;
 import Logic.User;
-import activities.GamePlay;
+import UI.Fragments.GamePlay;
+import UI.Fragments.ResultScreen;
+import UI.Fragments.TrapListFragment;
 import activities.MainActivity;
-import activities.PopItems;
-import activities.ResultScreen;
 
 
 /**
@@ -44,8 +42,6 @@ import activities.ResultScreen;
 
 public class Board extends ImageView {
     public static final String FINISH_THE_PATH_TAG = "Finish the path to the end before adding shields!";
-    public static final String FROM_CREATE_TAG = "from_create";
-    public static final String FROM_GAME_TAG = "from_game";
     public static final String CHOOSE_TAG = "Choose a tile for the start of the trap";
     public static final String ADD_SHIELD_TAG = "Would you like to add a shield before walking the path?";
     public static final String NO_PATH_TAG = "You do not have a path from start to end!";
@@ -64,7 +60,7 @@ public class Board extends ImageView {
     private boolean mDIdPlayerWin = false;
     private boolean mGameMode;
     private static Tile[][] mTiles;
-    private Activity mActivity;
+    private MainActivity mActivity;
     private LinearLayout mBoardLayout;
     public static Stack<Tile> mStack;
     private Button mUndo;
@@ -78,17 +74,22 @@ public class Board extends ImageView {
     private int mBoardId;
     private static LinkedList<Tile> mStepsTile;
     private ArrayList<Tile> mSwipedTiles;
+    private User mUser;
 
-
-    public Board(final Activity mActivity, ArrayList<DataRowBoard> mDataForRow, int mBoardId, final boolean mGameMode) {
+    public Board(final MainActivity mActivity, User user, ArrayList<DataRowBoard> mDataForRow, int mBoardId, final boolean mGameMode) {
         super(mActivity);
         this.mActivity = mActivity;
+        mUser = user;
+        if (mUser.IsRival()) {
+            mUser.SetBoard(this);
+        }
         this.mDataForRow = mDataForRow;
         this.mBoardId = mBoardId;
         this.mGameMode = mGameMode;
         mAllThreads = new ArrayList<>();
         SetButtons();
         mBoardLayout = SetMaze();
+        mActivity.GetController().SetGameMode(mGameMode);
         SetGameMode(mGameMode);
         mStack = new Stack<>();
         mUndo.setOnClickListener(new OnClickListener() {
@@ -113,7 +114,7 @@ public class Board extends ImageView {
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Intent i = new Intent(mActivity, PopItems.class);
+                        mActivity.GetController().SetListFlag(true);
                         if (mGameMode) {
                             if (CheckPath()) {
                                 mChest.setClickable(false);
@@ -123,8 +124,8 @@ public class Board extends ImageView {
                                 Toast.makeText(mActivity, FINISH_THE_PATH_TAG, Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            i.putExtra(FROM_CREATE_TAG, true);
-                            mActivity.startActivity(i);
+                            TrapListFragment listFragment = new TrapListFragment();
+                            mActivity.getFragmentManager().beginTransaction().add(R.id.container_list_board, listFragment).addToBackStack(null).commit();
                         }
                     }
                 });
@@ -137,7 +138,7 @@ public class Board extends ImageView {
                     Tile tile = mStack.peek();
                     if (tile.GetTrap() != null) {
                         Trap trapToRemove = tile.GetTrap();
-                        MainActivity.mUser.GetTraps().add(0, trapToRemove);
+                        mUser.GetTraps().add(0, trapToRemove);
                         tile.SetTrap(null);
                         SetTrapIcon(0);
                     }
@@ -148,7 +149,7 @@ public class Board extends ImageView {
     }
 
 
-    public Activity GetActivity (){
+    public MainActivity GetActivity() {
         return mActivity;
     }
 
@@ -163,11 +164,12 @@ public class Board extends ImageView {
         }
     }
 
-    public void SetSwipedTiles(ArrayList<Tile> list){
+
+    public void SetSwipedTiles(ArrayList<Tile> list) {
         mSwipedTiles = list;
     }
 
-    public ArrayList<Tile> GetSwipedTiles(){
+    public ArrayList<Tile> GetSwipedTiles() {
         return mSwipedTiles;
     }
 
@@ -180,13 +182,16 @@ public class Board extends ImageView {
     }
 
     public void AnimatePath() {
+        mActivity.GetController().SetFinishedGame();
         SetLocationOnScreen();
         mDIdPlayerWin = true;
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 ImageView avatar = (ImageView) mActivity.findViewById(R.id.avatar);
-                avatar.setBackgroundResource(R.mipmap.blue_ball);
+                avatar.setBackgroundResource(R.drawable.running_man);
+                AnimationDrawable animator = (AnimationDrawable) avatar.getBackground();
+                animator.start();
                 avatar.bringToFront();
                 avatar.setVisibility(VISIBLE);
                 Iterator<Tile> itr = mStepsTile.iterator();
@@ -230,12 +235,11 @@ public class Board extends ImageView {
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
-                                    MainActivity.mUser.AddToCoins(GamePlay.VALUE_FOR_WIN);
-                                    Intent resultScreen = new Intent(mActivity.getApplicationContext(), ResultScreen.class);
-                                    resultScreen.putExtra("player_win", true);
-                                    mActivity.startActivity(resultScreen);
+                                    mUser.AddToCoins(GamePlay.VALUE_FOR_WIN);
+                                    mActivity.GetController().SetWin(true);
+                                    mActivity.getFragmentManager().beginTransaction().remove(mActivity.getFragmentManager().findFragmentById(R.id.container_board)).addToBackStack(null).commit();
+                                    mActivity.getFragmentManager().beginTransaction().add(R.id.container_Result_Screen,new ResultScreen()).addToBackStack(null).commit();
                                     KillAllRunningThreads();
-                                    mActivity.finish();
                                 }
                             }));
                     mAllThreads.get(mAllThreads.size() - 1).start();
@@ -261,9 +265,17 @@ public class Board extends ImageView {
                         while (mIsWaitingForTrapToPick) {
                         }
                         mChest.setClickable(true);
-                        Intent i = new Intent(getContext(), PopItems.class);
-                        i.putExtra(FROM_GAME_TAG, true);
-                        mActivity.startActivity(i);
+                        mActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                TrapListFragment listFragment = new TrapListFragment();
+                                if (!mGameMode) {
+                                    mActivity.getFragmentManager().beginTransaction().add(R.id.container_list_board, listFragment).addToBackStack(null).commit();
+                                } else {
+                                    mActivity.getFragmentManager().beginTransaction().add(R.id.container_list_board_gameplay, listFragment).addToBackStack(null).commit();
+                                }
+                            }
+                        });
                     }
                 }));
         mAllThreads.get(mAllThreads.size() - 1).start();
@@ -271,7 +283,8 @@ public class Board extends ImageView {
     }
 
     public static void CompleteShieldLayout(Tile tile, Trap trap) {
-        boolean reachedTile = false;;
+        boolean reachedTile = false;
+        ;
         for (Tile tempTile : mStepsTile) {
             if (tempTile == tile) {
                 reachedTile = true;
@@ -287,7 +300,7 @@ public class Board extends ImageView {
         PROTECTION = 0;
     }
 
-    public boolean IsGameMode(){
+    public boolean IsGameMode() {
         return mGameMode;
     }
 
@@ -314,9 +327,8 @@ public class Board extends ImageView {
                                                 while (mIsWaitingForTrapToPick) {
                                                 }
                                                 CompleteShieldLayout(mStack.peek(), mStack.peek().getCounterTrap());
-                                                Intent i = new Intent(getContext(), PopItems.class);
-                                                i.putExtra(FROM_GAME_TAG, true);
-                                                mActivity.startActivity(i);
+                                                TrapListFragment mListFragment = new TrapListFragment();
+                                                mActivity.getFragmentManager().beginTransaction().add(R.id.container_list, mListFragment).commit();
                                             }
                                         }));
                                 mAllThreads.get(mAllThreads.size() - 1).start();
@@ -380,12 +392,8 @@ public class Board extends ImageView {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        Intent resultScreen = new Intent(mActivity.getApplicationContext(), ResultScreen.class);
-                        resultScreen.putExtra("player_win", false);
-                        //TODO: ADD COINS TO WINNER THROUGH FIREBASE
-                        KillAllRunningThreads();
-                        mActivity.startActivity(resultScreen);
-                        mActivity.finish();
+                        mActivity.getFragmentManager().beginTransaction().remove(mActivity.getFragmentManager().findFragmentById(R.id.container_board)).addToBackStack(null).commit();
+                        mActivity.getFragmentManager().beginTransaction().add(R.id.container_Result_Screen,new ResultScreen()).addToBackStack(null).commit();
 
                     }
                 }));
@@ -496,6 +504,10 @@ public class Board extends ImageView {
         return false;
     }
 
+    public int GetBoardDataSize(){
+        return mDataForRow.size();
+    }
+
     public boolean ContainsPath(ArrayList<Tile> set) {
         int counter = 0;
         for (Tile tile : set)
@@ -513,7 +525,7 @@ public class Board extends ImageView {
             for (int i = 0; i < NUM_OF_ROWS; i++) {
                 rows.add(new LinearLayout(mActivity));
                 for (int j = 0; j < NUM_OF_COLS; j++) {
-                    mTiles[i][j] = new Tile( i, j, observer);
+                    mTiles[i][j] = new Tile(i, j, observer);
                     GridLayout.LayoutParams param = new GridLayout.LayoutParams(GridLayout.spec(i), GridLayout.spec(j));
                     Display display = mActivity.getWindowManager().getDefaultDisplay();
                     Point size = new Point();
@@ -526,41 +538,64 @@ public class Board extends ImageView {
                 }
             }
         } else {
-
             for (int i = 0; i < NUM_OF_ROWS; i++) {
                 rows.add(new LinearLayout(mActivity));
                 for (int j = 0; j < NUM_OF_COLS; j++) {
                     DataRowBoard data = getDataForCoord(i, j);
                     mTiles[data.GetRow()][data.GetCol()] = new Tile(data.GetRow(), data.GetCol(), observer);
-                    DataRowTile dataRowTile = MainActivity.mDataBase.GetTileById(data.GetTileId());
-                    if (dataRowTile.GetIsEntrance() == 1) {
-                        mTiles[data.GetRow()][data.GetCol()].SetIsEntrance(true);
-                        this.mEntranceTile = mTiles[data.GetRow()][data.GetCol()];
-                        this.mHasEntrance = true;
-                    }
-                    if (dataRowTile.GetIsExit() == 1) {
-                        mTiles[data.GetRow()][data.GetCol()].SetIsExit(true);
-                        this.mExitTile = mTiles[data.GetRow()][data.GetCol()];
-                        this.mHasExit = true;
-                    }
-                    if (dataRowTile.GetIsWall() == 0)
-                        mTiles[data.GetRow()][data.GetCol()].SetIsWall(false);
+                    DataRowTile dataRowTile;
+                    synchronized (MainActivity.mLockObject) {
+                        if (!data.IsFromFireBase()) {
+                            dataRowTile = mActivity.GetDBOperator().GetTileById(data.GetTileId());
+                            if (dataRowTile.GetIsEntrance() == 1) {
+                                mTiles[data.GetRow()][data.GetCol()].SetIsEntrance(true);
+                                this.mEntranceTile = mTiles[data.GetRow()][data.GetCol()];
+                                this.mHasEntrance = true;
+                            }
+                            if (dataRowTile.GetIsExit() == 1) {
+                                mTiles[data.GetRow()][data.GetCol()].SetIsExit(true);
+                                this.mExitTile = mTiles[data.GetRow()][data.GetCol()];
+                                this.mHasExit = true;
+                            }
+                            if (dataRowTile.GetIsWall() == 0)
+                                mTiles[data.GetRow()][data.GetCol()].SetIsWall(false);
 
-                    DataRowTileTrap dataRowTileTrap = MainActivity.mDataBase.GetTrapByTileId(data.GetTileId());
-                    if (dataRowTileTrap != null) {
-                        Trap trap = new Trap(dataRowTileTrap.GetTrapId());
-                        mTiles[data.GetRow()][data.GetCol()].SetTrap(trap);
-                        trap.SetTile(mTiles[data.GetRow()][data.GetCol()]);
+                            DataRowTileTrap dataRowTileTrap = mActivity.GetDBOperator().GetTrapByTileId(data.GetTileId());
+                            if (dataRowTileTrap != null) {
+                                Trap trap = new Trap(dataRowTileTrap.GetTrapId());
+                                mTiles[data.GetRow()][data.GetCol()].SetTrap(trap);
+                                trap.SetTile(mTiles[data.GetRow()][data.GetCol()]);
+                            }
+                        } else {//data is from firebase
+                            if (data.IsEntrance()) {
+                                mTiles[data.GetRow()][data.GetCol()].SetIsEntrance(data.IsEntrance());
+                                this.mEntranceTile = mTiles[data.GetRow()][data.GetCol()];
+                                this.mHasEntrance = true;
+                            }
+                            if (data.isExit()) {
+                                mTiles[data.GetRow()][data.GetCol()].SetIsExit(data.isExit());
+                                this.mExitTile = mTiles[data.GetRow()][data.GetCol()];
+                                this.mHasExit = true;
+                            }
+                            if (!data.IsWall()) {
+                                mTiles[data.GetRow()][data.GetCol()].SetIsWall(false);
+                            }
+                            if (data.GetTrapIndex() != -1) {
+                                Trap trap = new Trap(data.GetTrapIndex());
+                                mTiles[data.GetRow()][data.GetCol()].SetTrap(trap);
+                                trap.SetTile(mTiles[data.GetRow()][data.GetCol()]);
+                            }
+                        }
+                        GridLayout.LayoutParams param = new GridLayout.LayoutParams(GridLayout.spec(data.GetRow()), GridLayout.spec(data.GetCol()));
+                        Display display = mActivity.getWindowManager().getDefaultDisplay();
+                        Point size = new Point();
+                        display.getSize(size);
+                        param.width = size.x / NUM_OF_COLS;
+                        param.height = (size.y - (TOP_BAR_HEIGHT + BOTTOM_BAR_HEIGHT)) / NUM_OF_ROWS;
+                        param.setMargins(0, 0, 0, 0);
+                        param.setGravity(0);
+                        rows.get(data.GetRow()).addView(mTiles[data.GetRow()][data.GetCol()], param);
                     }
-                    GridLayout.LayoutParams param = new GridLayout.LayoutParams(GridLayout.spec(data.GetRow()), GridLayout.spec(data.GetCol()));
-                    Display display = mActivity.getWindowManager().getDefaultDisplay();
-                    Point size = new Point();
-                    display.getSize(size);
-                    param.width = size.x / NUM_OF_COLS;
-                    param.height = (size.y - (TOP_BAR_HEIGHT + BOTTOM_BAR_HEIGHT)) / NUM_OF_ROWS;
-                    param.setMargins(0, 0, 0, 0);
-                    param.setGravity(0);
-                    rows.get(data.GetRow()).addView(mTiles[data.GetRow()][data.GetCol()], param);
                 }
             }
         }
@@ -633,18 +668,19 @@ public class Board extends ImageView {
     }
 
 
-    public Button GetApproveBtn(){
+    public Button GetApproveBtn() {
         return mApprove;
     }
+
     public void SetEntranceActivated(boolean mEntranceActivated) {
         this.mEntranceActivated = mEntranceActivated;
     }
 
     public void ApprovePath() {
+        mActivity.GetController().SetFinishedGame();
         clearVisited();
         if (CheckPath()) {
-//            SetLocationOnScreen();
-            if (MainActivity.mUser.GetTraps().size() > 0) {
+            if (mUser.GetTraps().size() > 0) {
                 TrapDialog();
             } else {
                 AnimatePath();
@@ -662,13 +698,8 @@ public class Board extends ImageView {
     public void SaveCreatedMaze() {
         clearVisited();
         if (CheckPath()) {
-            MainActivity.mDataBaseManager.addThread(
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            SaveBoard(MainActivity.mUser);
-                        }
-                    }));
+            //SaveBoard(mUser);
+            mActivity.onBackPressed();
         } else
             mActivity.runOnUiThread(new Runnable() {
                 @Override
@@ -678,21 +709,26 @@ public class Board extends ImageView {
             });
     }
 
-    public void SaveBoard(final User user){
-       MainActivity.mDataBaseManager.addThread(
-               new Thread(new Runnable() {
+    public void SaveBoard(final User user) {
+        if (mActivity.GetDBOperator().GetDBManager() == null) {
+            mActivity.GetDBOperator().SetDBManager(new DataBaseManager());
+            mActivity.GetDBOperator().GetDBManager().start();
+        }
+        mActivity.GetDBOperator().GetDBManager().addThread(new Thread(new Runnable() {
             @Override
             public void run() {
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(mActivity, "Saving....", Toast.LENGTH_LONG).show();
-                        mActivity.findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                        //mActivity.findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                     }
                 });
-                MainActivity.mFireBaseOperator.SaveBoardToFireBase(Board.this,MainActivity.mUser);
+                if (CheckPath()) {
+                    mActivity.GetFireBaseOperator().SaveBoardToFireBase(Board.this, mUser);
+                }
                 ArrayList<DataRowBoard> rowsForBoard = new ArrayList<>();
-                MainActivity.mDataBase.DeleteUserBoard(user.GetId());
+                mActivity.GetDBOperator().DeleteUserBoard(user.GetId());
                 for (int i = 0; i < NUM_OF_ROWS; i++) {
                     for (int j = 0; j < NUM_OF_COLS; j++) {
                         Tile tile = mTiles[i][j];
@@ -707,28 +743,26 @@ public class Board extends ImageView {
                             if (tile.IsExit())
                                 isExit = 1;
                             String tileId = tile.GetTileId();
-                            MainActivity.mDataBase.AddRow_Tiles(new DataRowTile(tileId,i, j, isWall, isEntrance, isExit));//tile
+                            mActivity.GetDBOperator().AddRow_Tiles(new DataRowTile(tileId, i, j, isWall, isEntrance, isExit));//tile
 
                             if (tile.GetTrap() != null) {
-                                MainActivity.mDataBase.AddRow_TileTrap(new DataRowTileTrap(tile.GetTrap().GetTrapIndex(),tileId ));//save trap_tile
+                                mActivity.GetDBOperator().AddRow_TileTrap(new DataRowTileTrap(tile.GetTrap().GetTrapIndex(), tileId));//save trap_tile
                             }
                             rowsForBoard.add(new DataRowBoard(user.GetId(), i, j, tileId));//save board
                         }
                     }
                 }
                 if (rowsForBoard.size() > 0) {
-                    MainActivity.mDataBase.AddRows_Board(rowsForBoard);
+                    mActivity.GetDBOperator().AddRows_Board(rowsForBoard);
                 }
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mActivity.findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
-                        Toast.makeText(mActivity,MAZE_SAVED_TAG , Toast.LENGTH_LONG).show();
+                        //mActivity.findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
+                        Toast.makeText(mActivity, MAZE_SAVED_TAG, Toast.LENGTH_LONG).show();
                     }
                 });
-                mActivity.finish();
             }
-
         }));
 
     }

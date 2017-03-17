@@ -1,4 +1,4 @@
-package UI;
+package UI.Fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -17,6 +17,7 @@ import activities.MainActivity;
 
 public class LoggedInFragment extends Fragment {
     private TextView mWelcomeUser;
+    private MainActivity mActivity;
 
 
     @Override
@@ -30,13 +31,13 @@ public class LoggedInFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
+        mActivity = (MainActivity)getActivity();
         Inflate();
     }
 
     public void Inflate(){
         mWelcomeUser = (TextView) getActivity().findViewById(R.id.user_name_logged);
-        mWelcomeUser.setText(MainActivity.mUser.GetUserName());
-
+        mWelcomeUser.setText(mActivity.GetController().GetUser().GetUserName());
 
     }
 }

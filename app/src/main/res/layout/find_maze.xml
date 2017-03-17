@@ -15,31 +15,24 @@
             android:id="@+id/searchView"
             android:layout_width="wrap_content"
             android:elevation="2dp"
-            android:background="#ff9900"
+            android:background="#a0522d"
             android:layout_alignParentRight="true"
             android:queryHint="Search a maze"
             android:layout_height="wrap_content">
         </SearchView>
 
-        <EditText
-            android:id="@+id/searchEditText"
-            android:layout_toLeftOf="@+id/searchView"
-            android:layout_width="150dp"
-            android:hint="Find a Maze"
-            android:layout_height="50dp" />
-
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/searchResults"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/searchView"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:orientation="vertical"
-            android:paddingTop="30dp"
+            android:layout_below="@+id/searchView"
             >
 
-        </LinearLayout>
-    </RelativeLayout>
+        </FrameLayout>
 
+
+    </RelativeLayout>
 
 </RelativeLayout>

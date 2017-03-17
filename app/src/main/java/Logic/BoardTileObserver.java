@@ -6,6 +6,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import UI.Board;
+import activities.MainActivity;
 
 /**
  * Created by אילון on 02/03/2017.
@@ -63,7 +64,6 @@ public class BoardTileObserver implements IMainBoardTileObserver {
     public void AddStep(Tile tile) {
         mBoard.GetStepsTile().offer(tile);
     }
-    
 
     @Override
     public void SetLocationOnScreenForAllTiles() {
@@ -160,7 +160,7 @@ public class BoardTileObserver implements IMainBoardTileObserver {
     }
 
     @Override
-    public Activity GetActivity() {
+    public MainActivity GetActivity() {
         return mBoard.GetActivity();
     }
 

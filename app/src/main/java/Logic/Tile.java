@@ -160,8 +160,8 @@ public class Tile extends ImageView {
                         }
                     } else {//if tile is not a wall
                         if (mTrap != null){
-                            MainActivity.mUser.AddToCoins(mTrap.GetPrice());
-                            MainActivity.mUser.GetTraps().add(mTrap);
+                            mObserver.GetActivity().GetController().GetUser().AddToCoins(mTrap.GetPrice());
+                            mObserver.GetActivity().GetController().GetUser().GetTraps().add(mTrap);
                             SetTrap(null);
                         }
                         if (mIsEntrance) {
@@ -183,36 +183,13 @@ public class Tile extends ImageView {
         });
     }
 
-
-
-    public void ApproveTrapDialog() {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        mObserver.SetTrapFlag(false);
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        if (!mSelf.GetTrap().IsAttack())
-                            mSelf.SetTrap(null);
-                        dialog.cancel();
-                        break;
-                }
-            }
-        };
-        AlertDialog.Builder builder = new AlertDialog.Builder(mObserver.GetActivity());
-        builder.setMessage("Are you sure you want to add a trap at [" + mRow + "]" + "[" + mCol + "]?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
-
-    }
-
     public String GetTileId() {
         return mTileId;
     }
 
     public void SetTileId(String tileId) {
         this.mTileId = tileId;
+
     }
 
     public void SetLocationOnScreen(int[] location){
@@ -279,10 +256,6 @@ public class Tile extends ImageView {
                 }
             }
         }
-    }
-
-    public boolean IsGameMode() {
-        return mGameMode;
     }
 
     public void SetGameMode(boolean mGameMode) {

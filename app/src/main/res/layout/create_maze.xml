@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff">
+    android:background="#000">
     <!--<ImageView-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="match_parent"-->
@@ -12,7 +12,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/colorPrimary"
+        android:background="#000"
         android:id="@+id/custom_tool_bar"
         >
         <Button
@@ -55,13 +55,15 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/custom_tool_bar"
         android:layout_above="@+id/trap_custom_tool_bar"
+        android:background="#000"
+
         >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/activity_create_maze_board"
-            android:background="@color/colorPrimary"
+            android:background="#000"
             android:orientation="vertical"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true">
@@ -73,7 +75,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/colorPrimary"
+        android:background="#000"
         android:id="@+id/trap_custom_tool_bar"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true">
@@ -134,6 +136,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminate="true" />
+
+
+
     </RelativeLayout>
 
+
+    <FrameLayout
+        android:layout_width="300dp"
+        android:layout_height="400dp"
+        android:id="@+id/container_list_board"
+        android:layout_centerInParent="true"
+        >
+
+    </FrameLayout>
 </RelativeLayout>

@@ -3,6 +3,7 @@ package Logic;
 import android.app.Activity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import DB.DataRowBoard;
@@ -22,19 +23,19 @@ public class User {
     private Board mBoard;
     private String mPassword;
     private List mTrapList;
+    private boolean mIsRival;
     private ArrayList<DataRowBoard> mListDataBoardFromFireBase;
-
 
     public User(String id, String password, String userName, int coins, ArrayList<Trap> traps) {
         this.mId = id;
         this.mPassword = password;
         this.mUserName = userName;
         this.mCoins = coins;
+        mIsRival = false;
         if (traps != null) {
             this.mTraps = new ArrayList<>(traps);
-            mTrapList = traps.subList(0,traps.size()-1);
-        }
-        else
+            mTrapList = traps.subList(0, traps.size() - 1);
+        } else
             this.mTraps = new ArrayList<>();
     }
 
@@ -52,6 +53,14 @@ public class User {
 
     public void SetUserName(String userName) {
         this.mUserName = userName;
+    }
+
+    public boolean IsRival(){
+        return mIsRival;
+    }
+
+    public void SetIsRival(boolean isRival){
+        mIsRival = isRival;
     }
 
     public ArrayList<Trap> GetTraps() {
@@ -90,20 +99,21 @@ public class User {
         this.mBoard = board;
     }
 
-    public void SetBoard(Activity activity, int boardId) {
-        mBoard = new Board(activity, MainActivity.mDataBase.GetBoardByUserId(MainActivity.mUser.mId), boardId, false);
+    public void SetBoard(MainActivity activity, int boardId) {
+        mBoard = new Board(activity,this, activity.GetDBOperator().GetBoardByUserId(mId), boardId, false);
     }
 
-    public List<Trap> GetTrapList(){
+
+    public List<Trap> GetTrapList() {
         return mTrapList;
     }
 
-    public void SetTrapList(List<Trap> traps){
+    public void SetTrapList(List<Trap> traps) {
         mTrapList = traps;
     }
 
     public ArrayList<DataRowBoard> GetListDataBoardFromFireBase() {
-        if (mListDataBoardFromFireBase == null){
+        if (mListDataBoardFromFireBase == null) {
             return new ArrayList<DataRowBoard>();
         }
         return mListDataBoardFromFireBase;
@@ -116,17 +126,20 @@ public class User {
     public ArrayList<Integer> GenerateListOfTrapIndex() {
         ArrayList<Integer> indexes = new ArrayList();
         for (Trap trap : mTraps) {
-                indexes.add(trap.GetTrapIndex());
+            indexes.add(trap.GetTrapIndex());
         }
         return indexes;
     }
 
-    public void GenerateListOfTraps(ArrayList<Integer> list){
+    public void GenerateListOfTraps(HashMap<String, Long> list, String tag) {
         mTraps = new ArrayList<>();
-        if (list != null){
-            for (Integer index : list) {
-                mTraps.add(new Trap(index));
+        int counter = 1;
+        if (list != null) {
+            for (String str : list.keySet()) {
+                long temp = list.get(str);
+                mTraps.add(new Trap((int) temp));
             }
         }
+
     }
 }

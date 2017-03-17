@@ -1,7 +1,6 @@
-package UI;
+package UI.Fragments;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.cdv.amazingmaze.R;
+
+import activities.MainActivity;
 
 /**
  * Created by אילון on 29/01/2017.
@@ -18,6 +19,7 @@ import com.example.cdv.amazingmaze.R;
 public class LoginFragment extends Fragment {
     private Button mSignIn;
     private Button mSignUp;
+    private MainActivity mActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -30,6 +32,7 @@ public class LoginFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
+        mActivity = (MainActivity)getActivity();
         Inflate();
     }
 
@@ -38,8 +41,8 @@ public class LoginFragment extends Fragment {
         mSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 getActivity().getFragmentManager().beginTransaction().add(R.id.log_container,new SignInFragment()).commit();
+                mActivity.GetController().SetIsSignIn(true);
             }
         });
         mSignUp = (Button) getActivity().findViewById(R.id.activity_main_sign_up);
@@ -47,8 +50,10 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 getActivity().getFragmentManager().beginTransaction().add(R.id.log_container,new SignUpFragment()).commit();
+                mActivity.GetController().SetIsSignUp(true);
             }
         });
+
     }
 
 }

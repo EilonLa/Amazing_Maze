@@ -2,6 +2,8 @@ package Logic;
 
 import android.app.Activity;
 
+import activities.MainActivity;
+
 /**
  * Created by אילון on 02/03/2017.
  */
@@ -67,6 +69,7 @@ public interface IMainBoardTileObserver {
     Tile GetEntranceTile();
 
     boolean IsGameMode ();
+
 
 
 }

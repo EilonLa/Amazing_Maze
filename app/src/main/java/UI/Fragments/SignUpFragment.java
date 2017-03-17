@@ -1,11 +1,10 @@
-package UI;
+package UI.Fragments;
 
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +16,9 @@ import android.widget.Toast;
 
 import com.example.cdv.amazingmaze.R;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
-
 import DB.DataRowUser;
-import Logic.Trap;
 import Logic.User;
+import UI.Fragments.LoggedInFragment;
 import activities.MainActivity;
 
 /**
@@ -41,6 +36,8 @@ public class SignUpFragment extends Fragment {
     private EditText mPasswrdConEditText;
     private Button mLoginBtn;
 
+    private MainActivity mActivity;
+
     private Object mLockObject = new Object();
 
     @Nullable
@@ -50,10 +47,12 @@ public class SignUpFragment extends Fragment {
         return view;
     }
 
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
+        mActivity = (MainActivity) getActivity();
         SetButtons();
 
     }
@@ -111,28 +110,31 @@ public class SignUpFragment extends Fragment {
                 }
 
                 if (okToContinue && mUserNameEditText.getText().toString().compareTo(ENTER_NAME_TAG) != 0 && mPasswrdEditText.getText().toString().compareTo(ENTER_PASSWORD_TAG) != 0) {
-                    DataRowUser dataForUser = MainActivity.mDataBase.GetUserByName(userName);
-                    if (dataForUser != null) {
-                        Toast.makeText(getActivity().getApplicationContext(), USER_EXISTS_TAG, Toast.LENGTH_LONG).show();
-                    } else {
-                        dataForUser = new DataRowUser(userName, password, User.DEFAULT_NUM_OF_COINS, null);
-                        MainActivity.mDataBase.AddRow_User(dataForUser);
-                        String userId = MainActivity.mFireBaseOperator.SaveUserToFireBaseFirstTime(userName, password, User.DEFAULT_NUM_OF_COINS);
-//                        //String id, String password, String userName, int coins, ArrayList<Trap> traps
-                        MainActivity.mUser = new User(userId,password,userName,User.DEFAULT_NUM_OF_COINS,null);
-//                        MainActivity.mFireBaseOperator.GetUserFromFireBase(userName, password);
-                        SharedPreferences.Editor editor = MainActivity.mSharedPref.edit();
-                        editor.putString("lastId", MainActivity.mUser.GetId());
-                        editor.commit();
-                        MainActivity.mLogOut.setVisibility(View.VISIBLE);
-                        getActivity().getFragmentManager().beginTransaction().remove(getActivity().getFragmentManager().findFragmentById(R.id.log_container)).commit();
-                        getActivity().getFragmentManager().beginTransaction().remove(getActivity().getFragmentManager().findFragmentById(R.id.activity_main_login)).commit();
+                    if (mActivity != null ) {
+                        DataRowUser dataForUser = mActivity.GetDBOperator().GetUserByName(userName);
 
-                        if (getActivity().getCurrentFocus() != null) {
-                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        if (dataForUser != null) {
+                            Toast.makeText(getActivity().getApplicationContext(), USER_EXISTS_TAG, Toast.LENGTH_LONG).show();
+                        } else {
+                            dataForUser = new DataRowUser(userName, password, User.DEFAULT_NUM_OF_COINS, null);
+                            if (mActivity != null) {
+                                mActivity.GetDBOperator().AddRow_User(dataForUser);
+                            }
+                            String userId = mActivity.GetFireBaseOperator().SaveUserToFireBaseFirstTime(userName, password, User.DEFAULT_NUM_OF_COINS,null);
+                            mActivity.GetController().SetUser(new User(userId, password, userName, User.DEFAULT_NUM_OF_COINS, null));
+                            SharedPreferences.Editor editor = mActivity.GetController().GetSharedPref().edit();
+                            editor.putString("lastId", mActivity.GetController().GetUser().GetId());
+                            editor.commit();
+                            mActivity.GetLogOut().setVisibility(View.VISIBLE);
+                            getFragmentManager().beginTransaction().add(R.id.activity_main_login, new LoggedInFragment()).commit();
+                            getActivity().getFragmentManager().beginTransaction().remove(getActivity().getFragmentManager().findFragmentById(R.id.log_container)).commit();
+                            getActivity().getFragmentManager().beginTransaction().remove(getActivity().getFragmentManager().findFragmentById(R.id.activity_main_login)).commit();
+                            mActivity.GetController().SetIsSignUp(false);
+                            if (getActivity().getCurrentFocus() != null) {
+                                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            }
                         }
-
                     }
                 }
             }

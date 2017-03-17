@@ -174,4 +174,13 @@
             android:layout_height="wrap_content"
             android:indeterminate="true" />
     </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="300dp"
+        android:layout_height="400dp"
+        android:id="@+id/container_list_board_gameplay"
+        android:layout_centerInParent="true"
+        >
+
+    </FrameLayout>
 </RelativeLayout>

@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * Created by אילון on 30/01/2017.
  */
 
-public class PopItemView extends ArrayAdapter {
+public class TrapViewAdapter extends ArrayAdapter {
     private int mCount = 1;
     private FontCreator_Logo mDescription;
     private FontCreator_Logo mName;
@@ -27,7 +27,7 @@ public class PopItemView extends ArrayAdapter {
     private static LayoutInflater mInflater = null;
 
 
-    public PopItemView(Context context,int ResourceId, ArrayList<Object[]> data/*, int iconId,String mName, String mDescription, int mCount*/) {
+    public TrapViewAdapter(Context context, int ResourceId, ArrayList<Object[]> data/*, int iconId,String mName, String mDescription, int mCount*/) {
         super(context,ResourceId);
 
         Log.i("mData size",""+data.size());
@@ -36,8 +36,8 @@ public class PopItemView extends ArrayAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
     }
-    public void IncrementCount(){
-        mCount++;
+    public void IncrementCount(int amount){
+        mCount+= amount;
         mCountView.setText("X"+ mCount);
     }
 
@@ -55,7 +55,15 @@ public class PopItemView extends ArrayAdapter {
 
     public void RemoveView(int index){
         if (mData.size() > index) {
-            mData.remove(index);
+            Object[] data = mData.get(index);
+            int numOfObjects = (int)data[3];
+            if (numOfObjects == 0) {
+                mData.remove(index);
+            }else{
+                mCountView.setText("X"+ numOfObjects);
+                data[3] = numOfObjects;
+                mData.set(index,data);
+            }
             notifyDataSetChanged();
         }
     }
