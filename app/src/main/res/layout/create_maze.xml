@@ -79,19 +79,12 @@
         android:id="@+id/trap_custom_tool_bar"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/remove_trap"
-            android:layout_alignParentLeft="true"
-            android:background="@mipmap/remove"
-            />
+
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/place_trap"
-            android:layout_toRightOf="@+id/remove_trap"
             android:background="@mipmap/chest"
             android:padding="30dp"
             />
@@ -102,7 +95,7 @@
             android:layout_toRightOf="@+id/place_trap"
             android:padding="30dp"
             />
-        <UI.FontCreator_Logo
+        <UI.FontCreator_Buttons
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -113,8 +106,8 @@
             android:textColor="@android:color/holo_blue_bright"
             />
 
-        <UI.FontCreator_Logo
-            android:layout_width="wrap_content"
+        <UI.FontCreator_Buttons
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:textSize="10dp"
             android:text="Set\nExit"

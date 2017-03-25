@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import UI.Board;
 
+
 public class BFS {
 
     private Queue<Tile> mQueue;
@@ -14,7 +15,15 @@ public class BFS {
         mQueue = new LinkedList<>();
     }
 
-    public ArrayList<Tile> FindNeighbours(Tile tiles[][], Tile pointer, boolean gameMode) {
+    /**
+     * search for neighbour tiles
+     *
+     * @param tiles - the complete list of tiles in the board
+     * @param pointer - starting tile
+     * @param gameMode - are we on game mode? this is needed because we are checking steps on game mode and path on creating
+     * @return list of neighbour tiles
+     */
+    public ArrayList<Tile> FindNeighbours(Tile tiles[][], Tile pointer, boolean gameMode)throws Exception {
         ArrayList<Tile> neighbours = new ArrayList<>();
         if (gameMode){
             if (pointer.GetRow() != 0 && tiles[pointer.GetRow() - 1][pointer.GetCol()].IsStepped() && !tiles[pointer.GetRow() - 1][pointer.GetCol()].IsVisited())//first row
@@ -46,7 +55,16 @@ public class BFS {
         return neighbours;
     }
 
-    public ArrayList<Tile> Bfs(Tile tiles[][], Tile node, boolean gameMode) {
+
+    /**
+     * Check to see if we have a path from the start to the end
+     *
+     * @param tiles - the complete list of tiles
+     * @param node - will be the starting tile
+     * @param gameMode - are we on game mode?
+     * @return
+     */
+    public ArrayList<Tile> Bfs(Tile tiles[][], Tile node, boolean gameMode)throws Exception {
         ArrayList<Tile> list = new ArrayList<>();
         mQueue.add(node);
         node.SetVisited(true);

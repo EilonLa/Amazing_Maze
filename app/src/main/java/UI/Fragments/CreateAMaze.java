@@ -1,44 +1,77 @@
 package UI.Fragments;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import com.example.cdv.amazingmaze.R;
 
+import Logic.ExceptionHandler;
 import UI.Board;
 import activities.MainActivity;
 
 /**
- * Created by אילון on 26/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The CreateAMaze fragment is inflated when the user wants to edit his maze
+ *
  */
 
 public class CreateAMaze extends Fragment {
     private View mSetEntrance;
     private View mSetExit;
-    private MainActivity mMainActivity;
+    private Button mBackBtn;
+    private MainActivity mActivity;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
-        mMainActivity = (MainActivity)getActivity();
-       // if ( mMainActivity.GetController().GetUser().GetBoard() == null) {
-        mMainActivity.GetController().GetUser().SetBoard(new Board(mMainActivity, mMainActivity.GetController().GetUser(),  mMainActivity.GetController().GetUser().GetListDataBoardFromFireBase(), R.id.activity_create_maze_board, false));
-
+        mActivity = (MainActivity) getActivity();
+        if (mActivity.GetController().GetUser().GetBoard() == null) {
+            try {
+                mActivity.GetController().GetUser().SetBoard(new Board(mActivity, mActivity.GetController().GetUser(), mActivity.GetController().GetUser().GetListDataBoardFromFireBase(), R.id.activity_create_maze_board, false));
+            } catch (Exception e) {
+                e.printStackTrace();
+                
+                new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+            }
+        } else {
+            try {
+                new Board(mActivity.GetController().GetUser().GetBoard());
+            } catch (Exception e) {
+                e.printStackTrace();
+                new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+            }
+        }
+        mBackBtn = (Button) getActivity().findViewById(R.id.back_create);
+        mBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mActivity.GetController().GetActiveBoard().DrainStack();
+                mActivity.onBackPressed();
+            }
+        });
         this.mSetEntrance = getActivity().findViewById(R.id.set_entrance);
         mSetEntrance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ( mMainActivity.GetController().GetUser().GetBoard().IsEntranceActivated()) {
-                     mMainActivity.GetController().GetUser().GetBoard().SetEntranceActivated(false);
+                mSetExit.setBackgroundColor(Color.BLACK);
+                mActivity.GetController().ViewToReset(mSetEntrance);
+                if (mActivity.GetController().GetUser().GetBoard().IsEntranceActivated()) {
+                    mActivity.GetController().GetUser().GetBoard().SetEntranceActivated(false);
+                    mSetEntrance.setBackgroundColor(Color.BLACK);
                 } else {
-                     mMainActivity.GetController().GetUser().GetBoard().SetEntranceActivated(true);
-                     mMainActivity.GetController().GetUser().GetBoard().SetExitActivated(false);
+                    mActivity.GetController().GetUser().GetBoard().SetEntranceActivated(true);
+                    mActivity.GetController().GetUser().GetBoard().SetExitActivated(false);
+                    mSetEntrance.setBackgroundColor(Color.parseColor("#C15823"));
                 }
             }
         });
@@ -46,11 +79,17 @@ public class CreateAMaze extends Fragment {
         mSetExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ( mMainActivity.GetController().GetUser().GetBoard().IsExitActivated()) {
-                     mMainActivity.GetController().GetUser().GetBoard().SetExitActivated(false);
-                } else {
-                     mMainActivity.GetController().GetUser().GetBoard().SetExitActivated(true);
-                     mMainActivity.GetController().GetUser().GetBoard().SetEntranceActivated(false);
+                mSetEntrance.setBackgroundColor(Color.BLACK);
+                mActivity.GetController().ViewToReset(mSetExit);
+                if (mActivity.GetController().GetUser() != null && mActivity.GetController().GetUser().GetBoard() != null) {
+                    if (mActivity.GetController().GetUser().GetBoard().IsExitActivated()) {
+                        mActivity.GetController().GetUser().GetBoard().SetExitActivated(false);
+                        mSetExit.setBackgroundColor(Color.BLACK);
+                    } else {
+                        mActivity.GetController().GetUser().GetBoard().SetExitActivated(true);
+                        mActivity.GetController().GetUser().GetBoard().SetEntranceActivated(false);
+                        mSetExit.setBackgroundColor(Color.parseColor("#C15823"));
+                    }
                 }
             }
         });

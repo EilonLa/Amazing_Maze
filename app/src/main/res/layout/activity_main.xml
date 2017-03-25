@@ -35,159 +35,19 @@
                 android:layout_centerHorizontal="true"
                 android:background="@mipmap/logo" />
 
-            <LinearLayout
-                android:id="@+id/logo_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/logo"
-
-                >
 
                 <UI.FontCreator_Logo
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:layout_centerInParent="true"
-                    android:text="T"
-                    android:textColor="@android:color/holo_red_dark"
+                    android:paddingTop="30dp"
+                    android:text="The amazing maze"
+                    android:textColor="@android:color/black"
                     android:textSize="23dp"
 
                     />
 
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="H"
-                    android:textColor="@android:color/holo_orange_light"
-                    android:textSize="23dp" />
 
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="E"
-                    android:textColor="@android:color/holo_blue_bright"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text=" "
-                    android:textColor="@android:color/holo_blue_bright"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="A"
-                    android:textColor="@android:color/holo_green_dark"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="M"
-                    android:textColor="@android:color/holo_purple"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="A"
-                    android:textColor="#66FF00"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="Z"
-                    android:textColor="#FF9900"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="I"
-                    android:textColor="@android:color/holo_green_dark"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="N"
-                    android:textColor="@android:color/holo_red_light"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="G"
-                    android:textColor="#FFFF99"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text=" "
-                    android:textColor="@android:color/white"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="M"
-                    android:textColor="#3344FF"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="A"
-                    android:textColor="#FF4400"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="Z"
-                    android:textColor="#FFAA77"
-                    android:textSize="23dp" />
-
-                <UI.FontCreator_Logo
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_centerInParent="true"
-                    android:text="E"
-                    android:textColor="#FFFF00"
-                    android:textSize="23dp" />
-            </LinearLayout>
 
 
         </RelativeLayout>
@@ -195,7 +55,7 @@
         <FrameLayout
             android:id="@+id/activity_main_login"
             android:layout_width="250dp"
-            android:layout_height="110dp"
+            android:layout_height="150dp"
             android:layout_below="@+id/activity_main_logo"
             android:layout_centerInParent="true"
             android:paddingTop="30dp">
@@ -258,20 +118,23 @@
                 android:layout_marginBottom="0dp"
                 android:gravity="center"
                 android:text="Log out "
+                android:textColor="@color/colorPrimary"
+                android:textSize="16dip" />
+
+            <TextView
+                android:id="@+id/credits"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/logout"
+                android:layout_marginBottom="0dp"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:text="Created by Dvir Twina and Eilon Laor "
                 android:textSize="16dip" />
 
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/credits"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/activity_main_menu"
-            android:layout_marginBottom="0dp"
-            android:gravity="center"
-            android:paddingTop="70dp"
-            android:text="Created by Dvir Twina and Eilon Laor "
-            android:textSize="16dip" />
+
 
 
         <FrameLayout

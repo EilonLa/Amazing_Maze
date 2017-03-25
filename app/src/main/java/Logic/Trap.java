@@ -3,8 +3,13 @@ package Logic;
 import com.example.cdv.amazingmaze.R;
 
 /**
- * Created by אילון on 30/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The Trap can be defence trap or attack.
+ * in creating you can place attack traps and in gameplay you can use defence traps only.
+ *
  */
+
 
 public class Trap {
     public static final int FIRE = 0;

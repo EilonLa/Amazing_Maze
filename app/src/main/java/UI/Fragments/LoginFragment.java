@@ -12,9 +12,11 @@ import com.example.cdv.amazingmaze.R;
 import activities.MainActivity;
 
 /**
- * Created by אילון on 29/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The LoginFragment fragment is inflated when the user is logged out
+ *
  */
-
 
 public class LoginFragment extends Fragment {
     private Button mSignIn;

@@ -23,11 +23,13 @@ import UI.Fragments.LoggedInFragment;
 import activities.MainActivity;
 
 /**
- * Created by אילון on 02/03/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The SignInFragment fragment is inflated when the user wants to sign in
+ *
  */
-
 public class SignInFragment extends Fragment {
-    private final String ENTER_MESSAGE_NAME_TAG = "enter mUser name";
+    private final String ENTER_MESSAGE_NAME_TAG = "enter user name";
     private final String ENTER_MESSAGE_PASSWORD_TAG = "enter password";
     private final String ERROR_MESSAGE_NO_USER = "User not exists!";
     private final String ERROR_MESSAGE_PASSWORD = "wrong password!";
@@ -36,12 +38,15 @@ public class SignInFragment extends Fragment {
     private Button mLoginBtn;
     private MainActivity mActivity;
     private View mView;
-    private AtomicBoolean mIsWaitingForFireBase;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.sign_in, container, false);
+        if(mActivity == null){
+            mActivity = (MainActivity)getActivity();
+        }
+        mActivity.GetController().SetIsSignIn(true);
         return view;
     }
 
@@ -50,7 +55,6 @@ public class SignInFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
         mActivity = (MainActivity)getActivity();
-        mIsWaitingForFireBase = new AtomicBoolean(false);
         SetButtons();
 
     }
@@ -90,11 +94,10 @@ public class SignInFragment extends Fragment {
                     mPasswrdEditText.setText("");
                 }
                 if (mUserNameEditText.getText().toString().compareTo(ENTER_MESSAGE_NAME_TAG) != 0 && mPasswrdEditText.getText().toString().compareTo(ENTER_MESSAGE_PASSWORD_TAG) != 0) {
-
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            mIsWaitingForFireBase.set(true);
+                            mActivity.GetController().IsWaitingForFireBase(true);
                             mActivity.GetFireBaseOperator().GetUserFromFireBase(null,userName, password);
                             while (mActivity.GetController().IsWaitingForFireBase()){}
                             if (mActivity.GetController().GetUser() != null) {
@@ -112,7 +115,7 @@ public class SignInFragment extends Fragment {
                                         mActivity.GetLogOut().setVisibility(View.VISIBLE);
                                         getActivity().getFragmentManager().beginTransaction().remove(getActivity().getFragmentManager().findFragmentById(R.id.log_container)).commit();
                                         getActivity().getFragmentManager().beginTransaction().remove(getActivity().getFragmentManager().findFragmentById(R.id.activity_main_login)).commit();
-                                        getFragmentManager().beginTransaction().add(R.id.activity_main_login, new LoginFragment()).addToBackStack(null).commit();
+                                        getFragmentManager().beginTransaction().replace(R.id.activity_main_login, new LoggedInFragment()).commit();
                                         mActivity.GetController().SetIsSignIn(false);
                                         if (getActivity().getCurrentFocus() != null) {
                                             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -131,10 +134,6 @@ public class SignInFragment extends Fragment {
             }
         });
 
-    }
-
-    public void IsWaitingForFireBase(boolean isWaiting){
-        mIsWaitingForFireBase.set(isWaiting);
     }
 
 }

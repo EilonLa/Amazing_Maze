@@ -40,7 +40,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/ok_create_game"
             android:layout_alignParentRight="true"
-            android:background="@mipmap/ok"
+            android:text="RUN!"
+            android:textColor="@android:color/holo_red_light"
+            android:textStyle="italic"
 
             />
 
@@ -77,19 +79,11 @@
         android:id="@+id/trap_custom_tool_bar_game"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/remove_trap_game"
-            android:layout_alignParentLeft="true"
-            android:background="@mipmap/remove"
-            />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/place_trap_game"
-            android:layout_toRightOf="@+id/remove_trap_game"
             android:background="@mipmap/chest"
             android:padding="30dp"
             />
@@ -100,59 +94,50 @@
             android:layout_toRightOf="@+id/place_trap_game"
             android:padding="30dp"
             />
-        <UI.FontCreator_Logo
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:textSize="10dp"
-            android:text="Start\nGame   "
-            android:id="@+id/start_game"
-            android:textColor="@android:color/holo_blue_bright"
-            />
+
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
             >
-            <UI.FontCreator_Logo
+            <UI.FontCreator_Buttons
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:textSize="10dp"
+                android:textSize="25dp"
                 android:text="0"
                 android:id="@+id/timer_game_hours"
                 android:textColor="@android:color/holo_blue_bright"
                 />
-            <UI.FontCreator_Logo
+            <UI.FontCreator_Buttons
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:textSize="10dp"
+                android:textSize="25dp"
                 android:text="0"
                 android:id="@+id/timer_game_minutes"
                 android:textColor="@android:color/holo_blue_bright"
                 />
-            <UI.FontCreator_Logo
+            <UI.FontCreator_Buttons
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:textSize="10dp"
+                android:textSize="25dp"
                 android:text=":"
                 android:id="@+id/timer_game_coma"
                 android:textColor="@android:color/holo_blue_bright"
                 />
-            <UI.FontCreator_Logo
+            <UI.FontCreator_Buttons
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:textSize="10dp"
+                android:textSize="25dp"
                 android:text="60"
                 android:id="@+id/timer_game_seconds"
                 android:textColor="@android:color/holo_blue_bright"

@@ -4,9 +4,11 @@ package DB;
 import java.util.ArrayList;
 
 /**
- * Created by eilon & dvir on 30/11/2016.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * Class represents a user in the DB
+ *
  */
-
 public class DataRowUser {
     private String mUserName;
     private String mUserId;

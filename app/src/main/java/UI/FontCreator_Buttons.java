@@ -7,7 +7,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Created by אילון on 28/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The FontCreator_Buttons is a factory for fonts
+ *
  */
 public class FontCreator_Buttons extends TextView {
 
@@ -27,7 +30,7 @@ public class FontCreator_Buttons extends TextView {
     }
 
     public void init() {
-        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), "button_font2.ttf");
+        Typeface tf = Typeface.createFromAsset(getContext().getAssets(), "button_font5.ttf");
         setTypeface(tf ,1);
     }
 }

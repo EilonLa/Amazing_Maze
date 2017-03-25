@@ -16,27 +16,31 @@ import com.example.cdv.amazingmaze.R;
 
 import java.util.ArrayList;
 
+import Logic.ExceptionHandler;
 import Logic.Tile;
 import Logic.Trap;
 import UI.Board;
+import UI.FontCreator_Buttons;
 import UI.FontCreator_Logo;
 import UI.TrapViewAdapter;
 import activities.MainActivity;
 
+
 /**
- * Created by אילון on 10/03/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The TrapListFragment fragment is a list view that shows all the traps
+ *
  */
 
 public class TrapListFragment extends ListFragment implements AdapterView.OnItemClickListener {
     public static final String SELECT_TILE_TAG = "Select a tile first!";
     public static final String CHOOSE_TILE_TAG = "Choose the right kind of trap!";
     public static final String NOT_ENOUGH_COINS_TAG = "Not enough coins!";
-
-
     private TrapViewAdapter mAdapter;
     private MainActivity mActivity;
     private boolean mIsFinished = false;
-    private FontCreator_Logo mNumOfCoinsView;
+    private FontCreator_Buttons mNumOfCoinsView;
 
     @Nullable
     @Override
@@ -55,59 +59,65 @@ public class TrapListFragment extends ListFragment implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (mActivity.GetController().GetIsCreating() || mActivity.GetController().GetIsGameOn()) {
-            Object[] tempObj = (Object[]) getListView().getAdapter().getItem(i);
-            boolean isAttack = (boolean) tempObj[4];
-            if (mActivity.GetController().GetIsGameOn() && !isAttack || mActivity.GetController().GetIsCreating() && isAttack) {
-                int tempIndex = Trap.MatchIconToIndex((int) tempObj[0]);
-                Trap tempTrap = new Trap(tempIndex);
-                if (!Board.mStack.isEmpty()) {
-                    Tile tempTile = Board.mStack.peek();
-                    if (tempTile.GetTrap() != null && !mActivity.GetController().GetIsGameOn()) {
-                        Trap trapToReplace = tempTile.GetTrap();
-                        mActivity.GetController().GetUser().GetTraps().add(0, trapToReplace);
-                        tempTile.SetTrap(tempTrap);
-                    }
-                    if (!tempTile.IsWall()) {
-                        if (mActivity.GetController().GetIsGameOn())
-                            tempTile.setCounterTrap(tempTrap);
-                        else if (mActivity.GetController().GetIsCreating()) {
+        try {
+            if (mActivity.GetController().GetIsCreating() || mActivity.GetController().GetIsGameOn()) {
+                Object[] tempObj = (Object[]) getListView().getAdapter().getItem(i);
+                boolean isAttack = (boolean) tempObj[4];
+                if (mActivity.GetController().GetIsGameOn() && !isAttack || mActivity.GetController().GetIsCreating() && isAttack) {
+                    int tempIndex = Trap.MatchIconToIndex((int) tempObj[0]);
+                    Trap tempTrap = new Trap(tempIndex);
+                    if (!Board.mStack.isEmpty()) {
+                        Tile tempTile = Board.mStack.peek();
+                        if (tempTile.GetTrap() != null && !mActivity.GetController().GetIsGameOn()) {
+                            Trap trapToReplace = tempTile.GetTrap();
+                            mActivity.GetController().GetUser().GetTraps().add(0, trapToReplace);
                             tempTile.SetTrap(tempTrap);
-                            tempTile.SetIcon(tempTrap.GetIconId());
                         }
-                        mActivity.removeTraps(tempTrap);
-                        mActivity.GetFireBaseOperator().UpdateTraps(mActivity.GetController().GetUser());
-                        mAdapter.RemoveView(i);
-                        if (mActivity.GetController().GetIsGameOn() ) {
-                            Board.PROTECTION = Trap.GetCosts()[tempTrap.GetTrapIndex()];
-                            Board.CompleteShieldLayout(Board.mStack.peek(), tempTrap);
+                        if (!tempTile.IsWall()) {
+                            if (mActivity.GetController().GetIsGameOn())
+                                tempTile.setCounterTrap(tempTrap);
+                            else if (mActivity.GetController().GetIsCreating()) {
+                                tempTile.SetTrap(tempTrap);
+                                tempTile.SetIcon(tempTrap.GetIconId());
+                            }
+                            mActivity.removeTraps(tempTrap);
+                            mActivity.GetFireBaseOperator().UpdateTraps(mActivity.GetController().GetUser());
+                            mAdapter.RemoveView(i);
+                            if (mActivity.GetController().GetIsGameOn()) {
+                                Board.PROTECTION = Trap.GetCosts()[tempTrap.GetTrapIndex()];
+                                Board.CompleteShieldLayout(Board.mStack.peek(), tempTrap);
+                            }
+                            mIsFinished = true;
+                            mActivity.GetController().SetIsUpgrading(false);
+                            mActivity.GetController().SetListFlag(false);
+                            mActivity.GetController().GetActiveBoard().SetAllBoardClickable(true);
+                            getActivity().getFragmentManager().beginTransaction().remove(this).commit();
                         }
-                        mIsFinished = true;
-                        mActivity.GetController().SetIsUpgrading(false);
-                        mActivity.GetController().SetListFlag(false);
-                        getActivity().getFragmentManager().beginTransaction().remove(this).commit();
+                    } else {
+                        Toast.makeText(getActivity(), SELECT_TILE_TAG, Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(getActivity(), SELECT_TILE_TAG, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), CHOOSE_TILE_TAG, Toast.LENGTH_LONG).show();
                 }
-            } else {
-                Toast.makeText(getActivity(),CHOOSE_TILE_TAG , Toast.LENGTH_LONG).show();
+            } else if (mActivity.GetController().GetIsUpgrading()) {
+                Object[] tempObj = (Object[]) getListView().getAdapter().getItem(i);
+                int tempIndex = Trap.MatchIconToIndex((int) tempObj[0]);
+                Trap tempTrap = new Trap(tempIndex);
+                if (mActivity.GetController().GetUser().GetCoins() >= tempTrap.GetPrice()) {
+                    mActivity.GetController().GetUser().GetTraps().add(0, tempTrap);
+                    mActivity.GetController().GetUser().AddToCoins(-1 * tempTrap.GetPrice());
+                    mActivity.GetFireBaseOperator().UpdateTraps(mActivity.GetController().GetUser());
+                    mActivity.GetFireBaseOperator().UpdateCoins(mActivity.GetController().GetUser());
+                } else {
+                    Toast.makeText(getActivity(), NOT_ENOUGH_COINS_TAG, Toast.LENGTH_LONG).show();
+                }
+                mActivity.GetController().SetIsUpgrading(false);
+                mActivity.GetController().SetListFlag(false);
+                getActivity().getFragmentManager().beginTransaction().remove(mActivity.getFragmentManager().findFragmentById(R.id.container_list)).commit();
             }
-        } else if (mActivity.GetController().GetIsUpgrading()) {
-            Object[] tempObj = (Object[]) getListView().getAdapter().getItem(i);
-            int tempIndex = Trap.MatchIconToIndex((int) tempObj[0]);
-            Trap tempTrap = new Trap(tempIndex);
-            if (mActivity.GetController().GetUser().GetCoins() >= tempTrap.GetPrice()) {
-                mActivity.GetController().GetUser().GetTraps().add(0, tempTrap);
-                mActivity.GetController().GetUser().AddToCoins(-1 * tempTrap.GetPrice());
-                mActivity.GetFireBaseOperator().UpdateTraps(mActivity.GetController().GetUser());
-                mActivity.GetFireBaseOperator().UpdateCoins(mActivity.GetController().GetUser());
-            } else {
-                Toast.makeText(getActivity(),NOT_ENOUGH_COINS_TAG , Toast.LENGTH_LONG).show();
-            }
-            mActivity.GetController().SetIsUpgrading(false);
-            mActivity.GetController().SetListFlag(false);
-            getActivity().getFragmentManager().beginTransaction().remove(mActivity.getFragmentManager().findFragmentById(R.id.container_list)).commit();
+        }catch (Exception e){
+            e.printStackTrace();
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
         }
     }
 
@@ -131,7 +141,7 @@ public class TrapListFragment extends ListFragment implements AdapterView.OnItem
             }
         }
         if (mActivity.GetController().GetIsUpgrading()) {
-            mNumOfCoinsView = (FontCreator_Logo) getActivity().findViewById(R.id.x_for_coins);
+            mNumOfCoinsView = (FontCreator_Buttons) getActivity().findViewById(R.id.x_for_coins);
             mNumOfCoinsView.setText(mActivity.GetController().GetUser().GetCoins() + "X");
             for (Trap trap : mActivity.GetAvailableTraps()) {
                 Object[] tempObjArr = CheckViewExists(data, trap);

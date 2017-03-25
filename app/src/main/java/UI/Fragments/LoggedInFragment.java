@@ -12,7 +12,10 @@ import com.example.cdv.amazingmaze.R;
 import activities.MainActivity;
 
 /**
- * Created by אילון on 29/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The LoggedInFragment fragment is inflated when the user was created properly
+ *
  */
 
 public class LoggedInFragment extends Fragment {

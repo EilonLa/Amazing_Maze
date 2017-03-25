@@ -10,23 +10,28 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import Logic.ExceptionHandler;
 import Logic.Trap;
 import Logic.User;
 import activities.MainActivity;
 
 
 /**
- * Created by eilon & dvir on 29/11/2016.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * Class represents the operator of DB
+ *
  */
 
 public class DBOperator extends SQLiteOpenHelper {
     public static final int DB_VERSION = 1;
     public static final String DB_NAME = "AmazingMaze";
+    public static final String CREATE_DB_TAG = "Create data base";
 
     public DataBaseManager mDBManager;
-    public Context mActivity;
+    public MainActivity mActivity;
 
-    public DBOperator(Context context) {
+    public DBOperator(MainActivity context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.mActivity = context;
     }
@@ -51,6 +56,7 @@ public class DBOperator extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             onUpgrade(db, DB_VERSION, 0);
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
         }
     }
 
@@ -67,119 +73,80 @@ public class DBOperator extends SQLiteOpenHelper {
             onCreate(db);
         }catch(Exception e){
             e.printStackTrace();
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
         }
     }
 
     public void AddRow_User(DataRowUser dr) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_ID, dr.GetUserId());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_USER_NAME, dr.GetUserName());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_PASSWORD, dr.GetPassword());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_COINS, dr.GetCoins());
-        // Inserting Row
-        db.insert(FeedReaderContract.FeedData.TABLE_NAME_USER, null, values);
-        db.close(); // Closing database connection
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_ID, dr.GetUserId());
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_USER_NAME, dr.GetUserName());
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_PASSWORD, dr.GetPassword());
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_COINS, dr.GetCoins());
+            // Inserting Row
+            db.insert(FeedReaderContract.FeedData.TABLE_NAME_USER, null, values);
+            db.close(); // Closing database connection
+        }catch (Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+        }
     }
-
-    public void AddRow_Traps(DataRowTrap dr) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_TRAP_ID, dr.GetId());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_TRAP_TYPE, dr.GetType());
-        // Inserting Row
-        db.insert(FeedReaderContract.FeedData.TABLE_NAME_TRAP, null, values);
-      //  db.close(); // Closing database connection
-    }
-
-    public void AddRow_Tiles(DataRowTile dr) {//2
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_TILE_ID, dr.GetId());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_ROW, dr.GetRow());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_COL, dr.GetCol());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_IS_WALL, dr.GetIsWall());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_IS_ENTRANCE, dr.GetIsEntrance());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_IS_EXIT, dr.GetIsExit());
-        // Inserting Row
-        db.insert(FeedReaderContract.FeedData.TABLE_NAME_TILE, null, values);
-        //db.close(); // Closing database connection
-    }
-
-    public void AddRow_Board(DataRowBoard dr) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_BOARD_USER_ID, dr.GetId());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_ROW, dr.GetRow());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_COL, dr.GetCol());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_TILE_ID_BOARD, dr.GetTileId());
-        // Inserting Row
-        db.insert(FeedReaderContract.FeedData.TABLE_NAME_BOARD, null, values);
-       // db.close(); // Closing database connection
+    
+    public void AddRow_Tiles(DataRowTile dr) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_TILE_ID, dr.GetId());
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_ROW, dr.GetRow());
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_COL, dr.GetCol());
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_IS_WALL, dr.GetIsWall());
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_IS_ENTRANCE, dr.GetIsEntrance());
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_IS_EXIT, dr.GetIsExit());
+            // Inserting Row
+            db.insert(FeedReaderContract.FeedData.TABLE_NAME_TILE, null, values);
+            //db.close(); // Closing database connection
+        }catch (Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+        }
     }
 
     public void AddRows_Board(ArrayList<DataRowBoard> rows) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.beginTransaction();
-        for (DataRowBoard row : rows) {
-            ContentValues values = new ContentValues();
-            values.put(FeedReaderContract.FeedData.COLUMN_NAME_BOARD_USER_ID, row.GetId());
-            values.put(FeedReaderContract.FeedData.COLUMN_NAME_ROW, row.GetRow());
-            values.put(FeedReaderContract.FeedData.COLUMN_NAME_COL, row.GetCol());
-            values.put(FeedReaderContract.FeedData.COLUMN_NAME_TILE_ID_BOARD, row.GetTileId());
-            // Inserting Row
-            db.insert(FeedReaderContract.FeedData.TABLE_NAME_BOARD, null, values);
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            db.beginTransaction();
+            for (DataRowBoard row : rows) {
+                ContentValues values = new ContentValues();
+                values.put(FeedReaderContract.FeedData.COLUMN_NAME_BOARD_USER_ID, row.GetId());
+                values.put(FeedReaderContract.FeedData.COLUMN_NAME_ROW, row.GetRow());
+                values.put(FeedReaderContract.FeedData.COLUMN_NAME_COL, row.GetCol());
+                values.put(FeedReaderContract.FeedData.COLUMN_NAME_TILE_ID_BOARD, row.GetTileId());
+                // Inserting Row
+                db.insert(FeedReaderContract.FeedData.TABLE_NAME_BOARD, null, values);
+            }
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            Log.i("ending save", "");
+            // db.close(); // Closing database connection
+        }catch (Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
         }
-        db.setTransactionSuccessful();
-        db.endTransaction();
-        Log.i("ending save", "");
-       // db.close(); // Closing database connection
     }
-
-
 
     public void AddRow_TileTrap(DataRowTileTrap dr) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_TRAP_ID_TRAP_TILE, dr.GetTrapId());
-        values.put(FeedReaderContract.FeedData.COLUMN_NAME_TILE_ID_TRAP_TILE, dr.GetTileId());
-        // Inserting Row
-        db.insert(FeedReaderContract.FeedData.TABLE_NAME_TRAP_TILE, null, values);
-       // db.close(); // Closing database connection
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_TRAP_ID_TRAP_TILE, dr.GetTrapId());
+            values.put(FeedReaderContract.FeedData.COLUMN_NAME_TILE_ID_TRAP_TILE, dr.GetTileId());
+            // Inserting Row
+            db.insert(FeedReaderContract.FeedData.TABLE_NAME_TRAP_TILE, null, values);
+            // db.close(); // Closing database connection
+        }catch(Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+        }
     }
-
-//    public void SaveCurrentState(User user){
-//        closeConnection();
-//        final User tempUser = user;
-//        if (user.GetBoard() != null)
-//            user.GetBoard().SaveBoard(tempUser);
-//        for (final Trap trap : user.GetTraps()) {
-//            synchronized (MainActivity.mLockObject) {
-//                AddRow_UserTrap(new DataRowTrapUser(tempUser.GetId(), trap.GetTrapIndex()));
-//            }
-//        }
-//        synchronized (MainActivity.mLockObject) {
-//            try {
-//                UpdateCoins(tempUser.GetCoins(), tempUser.GetId());
-//            }catch (Exception e){
-//                e.printStackTrace();
-//            }
-//        }
-//
-//    }
-//
-//    public void UpdateCoins(int coins, String userId){
-//        closeConnection();
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        String query = "UPDATE " +FeedReaderContract.FeedData.TABLE_NAME_USER+
-//                        " SET " +FeedReaderContract.FeedData.COLUMN_NAME_COINS+
-//                        " = "+coins+ " WHERE " +FeedReaderContract.FeedData.COLUMN_NAME_ID +
-//                        " = '"+userId+"'";
-//        db.execSQL(query);
-//        Log.i("UPDATE COINS", "after query");
-//
-//    }
-
+    
     public DataRowUser GetUserByName(String userName){
         closeConnection();
         SQLiteDatabase db = null;
@@ -199,9 +166,10 @@ public class DBOperator extends SQLiteOpenHelper {
                 row.SetTrapIndexes(GetUserTraps(row.GetUserId()));
 
             return row;
-        } catch (Exception E) {
-            E.printStackTrace();
-            Log.i("", "creating data base");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i("", CREATE_DB_TAG);
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -229,8 +197,9 @@ public class DBOperator extends SQLiteOpenHelper {
             c.close();
             row.SetTrapIndexes(GetUserTraps(row.GetUserId()));
             return row;
-        } catch (Exception E) {
-            Log.i("", "creating data base");
+        } catch (Exception e) {
+            Log.i("", CREATE_DB_TAG);
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -256,8 +225,9 @@ public class DBOperator extends SQLiteOpenHelper {
             c.close();
 
             return rows;
-        } catch (Exception E) {
-            Log.i("", "creating data base");
+        } catch (Exception e) {
+            Log.i("", CREATE_DB_TAG);
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -280,8 +250,9 @@ public class DBOperator extends SQLiteOpenHelper {
             c.close();
 
             return row;
-        } catch (Exception E) {
-            Log.i("", "creating data base");
+        } catch (Exception e) {
+            Log.i("", CREATE_DB_TAG);
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -306,9 +277,10 @@ public class DBOperator extends SQLiteOpenHelper {
             c.close();
 
             return rows;
-        } catch (Exception E) {
-            Log.i("", "creating data base");
-            E.printStackTrace();
+        } catch (Exception e) {
+            Log.i("", CREATE_DB_TAG);
+            e.printStackTrace();
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -331,8 +303,9 @@ public class DBOperator extends SQLiteOpenHelper {
             c.close();
 
             return row;
-        } catch (Exception E) {
-            Log.i("", "creating data base");
+        } catch (Exception e) {
+            Log.i("", CREATE_DB_TAG);
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -345,8 +318,9 @@ public class DBOperator extends SQLiteOpenHelper {
                     "DELETE FROM " + FeedReaderContract.FeedData.TABLE_NAME_BOARD +
                             " WHERE " + FeedReaderContract.FeedData.COLUMN_NAME_BOARD_USER_ID + " = '" + userId+"'";
             db.execSQL(query);
-        } catch (Exception E) {
-            Log.i("", "creating data base");
+        } catch (Exception e) {
+            Log.i("", CREATE_DB_TAG);
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
             onCreate(db);
         }
     }

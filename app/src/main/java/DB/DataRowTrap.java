@@ -1,9 +1,11 @@
 package DB;
 
 /**
- * Created by אילון on 31/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * Class represents the Trap in the DB
+ *
  */
-
 public class DataRowTrap {
     private int mType;
     private int mId;

@@ -58,11 +58,11 @@
 
         <UI.FontCreator_Buttons
             android:id="@+id/btn_play_again"
-            android:text="play\n again"
+            android:text="play  \nagain"
             android:layout_below="@id/finalScore"
             android:layout_alignEnd="@+id/finalScore"
             android:layout_width="wrap_content"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="0dp"

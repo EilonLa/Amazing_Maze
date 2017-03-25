@@ -18,9 +18,9 @@ import java.util.ArrayList;
 
 public class TrapViewAdapter extends ArrayAdapter {
     private int mCount = 1;
-    private FontCreator_Logo mDescription;
-    private FontCreator_Logo mName;
-    private FontCreator_Logo mCountView;
+    private FontCreator_Buttons mDescription;
+    private FontCreator_Buttons mName;
+    private FontCreator_Buttons mCountView;
     private ImageView mIcon;
     private String mNameText;
     private ArrayList<Object[]> mData;
@@ -89,13 +89,13 @@ public class TrapViewAdapter extends ArrayAdapter {
             if (vi == null)
                 vi = mInflater.inflate(R.layout.listview_row, null);
             if (size > i) {
-                mName = (FontCreator_Logo) vi.findViewById(R.id.name_list);
+                mName = (FontCreator_Buttons) vi.findViewById(R.id.name_list);
                 this.mName.setText(mData.get(i)[1].toString());
                 this.mIcon = (ImageView) vi.findViewById(R.id.icon_list);
                 mIcon.setBackgroundResource(Integer.parseInt(mData.get(i)[0].toString()));
-                mCountView = (FontCreator_Logo) vi.findViewById(R.id.count_list);
+                mCountView = (FontCreator_Buttons) vi.findViewById(R.id.count_list);
                 mCountView.setText("X" + mData.get(i)[3].toString());
-                this.mDescription = (FontCreator_Logo) vi.findViewById(R.id.descreption_list);
+                this.mDescription = (FontCreator_Buttons) vi.findViewById(R.id.descreption_list);
                 this.mDescription.setText(mData.get(i)[2].toString());
 //            }
             }

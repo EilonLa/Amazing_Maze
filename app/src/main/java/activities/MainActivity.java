@@ -21,6 +21,7 @@ import DB.DBOperator;
 import DB.DataRowBoard;
 import DB.DataRowUser;
 import DB.FireBaseOperator;
+import Logic.ExceptionHandler;
 import Logic.GameController;
 import Logic.Trap;
 import Logic.User;
@@ -30,11 +31,13 @@ import UI.Fragments.GamePlay;
 import UI.Fragments.LoginFragment;
 import UI.Fragments.LoggedInFragment;
 import UI.Fragments.TrapListFragment;
+import dalvik.system.BaseDexClassLoader;
 
-//TODO: change icon when returning from signUp
-//TODO: BACKGROUND FOR GAMEPLAY
-//TODO: FIND A MAZE
-
+/**
+ * @Author Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ *
+ */
 
 public class MainActivity extends FragmentActivity {
     public static final Object mLockObject = new Object();
@@ -51,83 +54,103 @@ public class MainActivity extends FragmentActivity {
     private GameController mController;
 
     @Override
+    protected void attachBaseContext(Context context) {
+        super.attachBaseContext(context);
+    }
+
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mDBOperator = new DBOperator(this);
-        mCreateNewMaze = findViewById(R.id.create_new);
-        mFireBaseOperator = new FireBaseOperator(this);
-        SetAvailableTraps();
-        mController = new GameController(this);
-        mLogOut = (TextView) findViewById(R.id.logout);
-        mLogOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mController.GetUser() != null) {
-                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    //mDataBase.SaveCurrentState(mUser);
-                                    mController.SetUser(null);
-                                    mLoginFragment = new LoginFragment();
-                                    getFragmentManager().beginTransaction().replace(R.id.activity_main_login, mLoginFragment).addToBackStack(null).commit();
-                                    mLogOut.setVisibility(View.INVISIBLE);
-                                    SharedPreferences.Editor editor = mController.GetSharedPref().edit();
-                                    editor.putInt("lastId", -1);
-                                    editor.commit();
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    dialog.cancel();
-                                    break;
+        try {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+            mDBOperator = new DBOperator(this);
+            mCreateNewMaze = findViewById(R.id.create_new);
+            mFireBaseOperator = new FireBaseOperator(this);
+            SetAvailableTraps();
+            mController = new GameController(this);
+            mLogOut = (TextView) findViewById(R.id.logout);
+            mLogOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mController.GetUser() != null) {
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        //mDataBase.SaveCurrentState(mUser);
+                                        mController.SetUser(null);
+                                        mLoginFragment = new LoginFragment();
+                                        getFragmentManager().beginTransaction().replace(R.id.activity_main_login, mLoginFragment).addToBackStack(null).commit();
+                                        mLogOut.setVisibility(View.INVISIBLE);
+                                        SharedPreferences.Editor editor = mController.GetSharedPref().edit();
+                                        editor.putString("lastId", "null");
+                                        editor.commit();
+                                        break;
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        dialog.cancel();
+                                        break;
+                                }
                             }
+                        };
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setMessage("Are you sure you want to log out?").setPositiveButton("Yes", dialogClickListener)
+                                .setNegativeButton("No", dialogClickListener).show();
+                    }
+                }
+            });
+            mCreateNewMaze.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mController.GetUser() != null && !mController.GetIsCreating()) {
+                        mCreateMaze = new CreateAMaze();
+                        mController.SetIsUpgrading(false);
+                        mController.SetIsSearching(false);
+                        mController.SetIsCreating(true);
+                        mController.SetGameMode(false);
+                        getFragmentManager().beginTransaction().add(R.id.container_board, mCreateMaze).addToBackStack(null).commit();
+
+                    } else {
+                        if (mController.GetUser() == null) {
+                            Toast.makeText(MainActivity.this, "You need to log in first", Toast.LENGTH_LONG).show();
                         }
-                    };
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage("Are you sure you want to log out?").setPositiveButton("Yes", dialogClickListener)
-                            .setNegativeButton("No", dialogClickListener).show();
+                    }
                 }
-            }
-        });
-        mCreateNewMaze.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mController.GetUser() != null) {
-                    mCreateMaze = new CreateAMaze();
-                    mController.SetIsCreating(true);
-                    getFragmentManager().beginTransaction().add(R.id.container_board, mCreateMaze).addToBackStack(null).commit();
+            });
+            mFindMaze = findViewById(R.id.Find_maze);
+            mFindMaze.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mController.GetUser() != null && !mController.GetIsSearching()) {
+                        mController.SetIsUpgrading(false);
+                        mController.SetIsSearching(true);
+                        mController.SetIsCreating(false);
+                        FindAMaze findFragment = new FindAMaze();
+                        getFragmentManager().beginTransaction().add(R.id.container_find, findFragment).addToBackStack(null).commit();
+                    }
 
-                } else {
-                    Toast.makeText(MainActivity.this, "You need to log in first", Toast.LENGTH_LONG).show();
                 }
-            }
-        });
-        mFindMaze = findViewById(R.id.Find_maze);
-        mFindMaze.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mController.GetUser() != null) {
-                    mController.SetIsSearching(true);
-                    FindAMaze findFragment = new FindAMaze();
-                    getFragmentManager().beginTransaction().add(R.id.container_find,findFragment).addToBackStack(null).commit();
+            });
+            mUpgradeMaze = findViewById(R.id.Upgrade_maze);
+            mUpgradeMaze.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("MainActivity: ", "mUpgradeMaze clicked");
+                    if (mController.GetUser() != null && !mController.GetIsUpgrading()) {
+                        TrapListFragment listFragment = new TrapListFragment();
+                        getFragmentManager().beginTransaction().add(R.id.container_list, listFragment).addToBackStack(null).commit();
+                        mController.SetIsUpgrading(true);
+                        mController.SetIsSearching(false);
+                        mController.SetIsCreating(false);
+                        mController.SetGameMode(false);
+                    }
                 }
-
-            }
-        });
-        mUpgradeMaze = findViewById(R.id.Upgrade_maze);
-        mUpgradeMaze.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("MainActivity: ", "mUpgradeMaze clicked");
-                if (mController.GetUser() != null && !mController.GetIsUpgrading()) {
-                    TrapListFragment listFragment = new TrapListFragment();
-                    getFragmentManager().beginTransaction().add(R.id.container_list, listFragment).addToBackStack(null).commit();
-                    mController.SetIsUpgrading(true);
-                }
-            }
-        });
-
+            });
+        }catch (Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mFireBaseOperator);
+        }
     }
 
     public TextView GetLogOut() {
@@ -170,21 +193,34 @@ public class MainActivity extends FragmentActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (mController.GetUser() == null) {
-                    mLoginFragment = new LoginFragment();
-                    getFragmentManager().beginTransaction().add(R.id.activity_main_login, mLoginFragment).addToBackStack(null).commit();
-                    mLogOut.setVisibility(View.INVISIBLE);
-                } else {
-                    mLoggedInFragment = new LoggedInFragment();
-                    getFragmentManager().beginTransaction().add(R.id.activity_main_login, mLoggedInFragment).addToBackStack(null).commit();
-                    SharedPreferences.Editor editor = mController.GetSharedPref().edit();
-                    editor.putString("lastId", mController.GetUser().GetId());
-                    editor.commit();
-                    mLogOut.setVisibility(View.VISIBLE);
+                try {
+                    if (mController.GetUser() == null) {
+                        mLoginFragment = new LoginFragment();
+                        getFragmentManager().beginTransaction().add(R.id.activity_main_login, mLoginFragment).commit();
+                        mLogOut.setVisibility(View.INVISIBLE);
+                    } else {
+                        mLoggedInFragment = new LoggedInFragment();
+                        getFragmentManager().beginTransaction().add(R.id.activity_main_login, mLoggedInFragment).commit();
+                        SharedPreferences.Editor editor = mController.GetSharedPref().edit();
+                        editor.putString("lastId", mController.GetUser().GetId());
+                        editor.commit();
+                        mLogOut.setVisibility(View.VISIBLE);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    e.getMessage();
+                    this.getClass().toString();
+                    StackTraceElement l = e.getStackTrace()[0];
+                    new ExceptionHandler(
+                            e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), GetFireBaseOperator());
+
+                    new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), GetFireBaseOperator());
                 }
             }
         });
     }
+
+    public LoginFragment GetLoginFragment(){return mLoginFragment;}
 
     @Override
     protected void onStart() {
@@ -199,48 +235,87 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        if (mController.GetIsCreating() && !mController.GetListFlag()){
-            mController.GetUser().GetBoard().SaveBoard(mController.GetUser());
-            mController.SetIsCreating(false);
-        }
-        if (mController.GetIsUpgrading()){
-            mController.SetIsUpgrading(false);
-        }
-//        if (mController.GetI){
-//            mIsSignIn = false;
-//        }
-//        if (mIsSignUp){
-//            mIsSignUp = false;
-//        }
-        if (mController.GetIsGameOn()&& mController.GetListFlag()){
-            mController.GetRival().GetBoard().PopFromStack();
-            mController.SetListFlag( false);
-        }
-        if (mController.GetListFlag()){
-            mController.SetListFlag( false);
-        }
+       try {
+           boolean backPressedNeeded = true;
+           if (mController.GetIsUpgrading()) {
+               mController.SetIsUpgrading(false);
+               mController.SetListFlag(false);
+               getFragmentManager().popBackStack();
+               backPressedNeeded = false;
+           }
 
-        if (getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack();
-        }else{
-            finish();
-        }
+           if (mController.GetIsSearching()) {
+               mController.SetIsSearching(false);
+               getFragmentManager().popBackStack();
+               backPressedNeeded = false;
+           }
 
+           if (mController.GetIsSignIn()) {
+               mController.SetIsSignIn(false);
+               getFragmentManager().beginTransaction().remove(getFragmentManager().findFragmentById(R.id.log_container)).commit();
+               getFragmentManager().beginTransaction().remove(getFragmentManager().findFragmentById(R.id.activity_main_login)).commit();
+               SetUserFragment();
+               backPressedNeeded = false;
+           }
+
+           if (mController.GetIsSignUp()) {
+               mController.SetIsSignUp(false);
+               getFragmentManager().beginTransaction().remove(getFragmentManager().findFragmentById(R.id.log_container)).commit();
+               getFragmentManager().beginTransaction().remove(getFragmentManager().findFragmentById(R.id.activity_main_login)).commit();
+               SetUserFragment();
+               backPressedNeeded = false;
+           }
+
+           if (mController.GetRival() != null && mController.GetRival().GetBoard() != null && mController.GetIsGameOn() && mController.GetListFlag()) {
+               mController.GetRival().GetBoard().PopFromStack();
+               mController.SetListFlag(false);
+               getFragmentManager().popBackStack();
+               backPressedNeeded = false;
+           }
+
+           if ((mController.GetIsGameOn() && !mController.GetListFlag()) || (mController.GetIsCreating() && !mController.GetListFlag())) {
+               if (mController.GetActiveBoard() != null) {
+                   if (!mController.GetActiveBoard().PopFromStack()) {
+                       //mController.GetActiveBoard().SaveBoard(mController.GetUser());
+                       mController.KillBoardThreads();
+                       mController.StopTimer();
+                       getFragmentManager().popBackStack();
+                       if (mController.GetIsCreating()) {
+                           mController.SetIsCreating(false);
+                       }
+                       if (mController.GetIsGameOn()) {
+                           mController.SetGameMode(false);
+                       }
+                   }
+                   backPressedNeeded = false;
+               }
+           }
+           if (mController.GetListFlag()) {
+               mController.SetListFlag(false);
+               getFragmentManager().popBackStack();
+               mController.GetActiveBoard().SetAllBoardClickable(true);
+           }
+
+           if (backPressedNeeded) {
+               if (getFragmentManager().getBackStackEntryCount() > 0) {
+                   mController.ResetFlags();
+                   for (int i = 0; i < getFragmentManager().getBackStackEntryCount(); ++i) {
+                       getFragmentManager().popBackStack();
+                   }
+               } else {
+                   finish();
+               }
+           }
+       }catch (Exception e){
+           e.printStackTrace();
+           new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), GetFireBaseOperator());
+       }
     }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        if (mUser != null) {
-//            SharedPreferences.Editor editor = mSharedPref.edit();
-//            editor.putString("lastId", mUser.GetId());
-//            editor.commit();
-//        }
-//
-//        if (mController.GetIsGameOn()) {
-//            mGamePlay.StopTimer();
-//            mGameOn = false;
-//        }
         finish();
     }
 }

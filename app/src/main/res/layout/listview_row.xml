@@ -9,21 +9,22 @@
         android:layout_height="wrap_content"
         android:id="@+id/icon_list"/>
 
-    <UI.FontCreator_Logo android:layout_width="wrap_content"
+    <UI.FontCreator_Buttons
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/name_list"
         android:textSize="10dp"
         />
 
 
-    <UI.FontCreator_Logo
+    <UI.FontCreator_Buttons
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/count_list"
         android:textSize="10dp"
         />
 
-    <UI.FontCreator_Logo
+    <UI.FontCreator_Buttons
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/descreption_list"

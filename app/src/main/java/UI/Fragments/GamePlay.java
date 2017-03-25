@@ -1,7 +1,6 @@
 package UI.Fragments;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,55 +9,70 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.cdv.amazingmaze.R;
 
+import Logic.ExceptionHandler;
 import UI.Board;
-import UI.FontCreator_Logo;
+import UI.FontCreator_Buttons;
 import activities.MainActivity;
 
 /**
- * Created by אילון on 26/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The GamePlay fragment is inflated when the user found a game and now we need to setup the board
+ *
  */
-
 public class GamePlay extends Fragment {
     public static final int VALUE_FOR_WIN = 10;
     private Board mBoard;
     private int mSeconds;
-    private FontCreator_Logo mGameTimer;
-    private FontCreator_Logo mStartGame;
+    private FontCreator_Buttons mGameTimer;
+    private FontCreator_Buttons mStartGame;
     private Thread mTimerHandler;
     private MainActivity mActivity;
+    private Button mBackBtn;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActivity = (MainActivity)getActivity();
-        mBoard = new Board(mActivity, mActivity.GetController().GetRival(), mActivity.GetController().GetRivalData(), R.id.activity_game_maze_board,true);
-        mBoard.SetGameMode(true);
-        mGameTimer = (FontCreator_Logo) getActivity().findViewById(R.id.timer_game_seconds);
+        mActivity = (MainActivity) getActivity();
+        try {
+            mBoard = new Board(mActivity, mActivity.GetController().GetRival(), mActivity.GetController().GetRivalData(), R.id.activity_game_maze_board, true);
+            mBoard.SetGameMode(true);
+            mGameTimer = (FontCreator_Buttons) getActivity().findViewById(R.id.timer_game_seconds);
+            mBackBtn = (Button) getActivity().findViewById(R.id.back_create_game);
+            mBackBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mActivity.GetController().GetActiveBoard().DrainStack();
+                    mActivity.onBackPressed();
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+            new ExceptionHandler(e.toString(), mActivity.GetFireBaseOperator());
+        }
         mSeconds = Integer.parseInt(mGameTimer.getText().toString());
-        mStartGame = (FontCreator_Logo) getActivity().findViewById(R.id.start_game);
-        mStartGame.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onClick(View view) {
-                startGame();
-            }
-        });
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.gameplay, container, false);
-        SetTimer();
+        try {
+            SetTimer();
+        }catch (Exception e){
+            e.printStackTrace();
+            new ExceptionHandler(e.toString(), mActivity.GetFireBaseOperator());
+        }
         return view;
     }
 
 
-    public void SetTimer(){
-        if (mTimerHandler ==null ) {
+    public void SetTimer()throws Exception {
+        if (mTimerHandler == null) {
             mTimerHandler = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -69,38 +83,44 @@ public class GamePlay extends Fragment {
                     }
                     while (mSeconds > 0) {
                         mSeconds--;
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mGameTimer.setText("" + mSeconds);
-                            }
-                        });
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mGameTimer.setText("" + mSeconds);
+                                }
+                            });
+                        }
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             return;
                         }
                     }
-                    TimeUp();
+                    try {
+                        TimeUp();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        new ExceptionHandler(e.toString(), mActivity.GetFireBaseOperator());
+                    }
                 }
             });
             mTimerHandler.start();
+            if (mActivity == null){
+                mActivity = (MainActivity)getActivity();
+            }
+            mActivity.GetController().SetTimer(mTimerHandler);
         }
     }
 
-    public void StopTimer (){
+    public void StopTimer() {
         if (mTimerHandler.isAlive())
             mTimerHandler.interrupt();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void startGame(){
-        Log.i("GamePlay",""+" mStartGame");
-    }
-
-    public void TimeUp() {
-        if (!mActivity.GetController().IsGameFinished()) {
-            mBoard.SetAllBoardNotClickable();
+    public void TimeUp()throws Exception {
+        if (mBoard != null) {
+            mBoard.SetAllBoardClickable(false);
             if (mBoard.CheckPath()) {
                 mBoard.AnimatePath();
             } else {//player lose
@@ -110,9 +130,5 @@ public class GamePlay extends Fragment {
                 mActivity.getFragmentManager().beginTransaction().add(R.id.container_Result_Screen, new ResultScreen()).addToBackStack(null).commit();
             }
         }
-        else{
-            StopTimer();
-        }
     }
-
 }

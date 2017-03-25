@@ -11,7 +11,10 @@ import UI.Board;
 import activities.MainActivity;
 
 /**
- * Created by אילון on 28/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The User can be the actual user that plays the game or a dummy user that represents the rival during game play
+ *
  */
 
 public class User {
@@ -99,7 +102,7 @@ public class User {
         this.mBoard = board;
     }
 
-    public void SetBoard(MainActivity activity, int boardId) {
+    public void SetBoard(MainActivity activity, int boardId) throws Exception{
         mBoard = new Board(activity,this, activity.GetDBOperator().GetBoardByUserId(mId), boardId, false);
     }
 

@@ -10,65 +10,63 @@ import activities.MainActivity;
 
 public interface IMainBoardTileObserver {
 
-    void SetSwipedTiles(Tile start);
+    void SetSwipedTiles(Tile start) throws Exception ;
 
-    void FireClickByLocation(int x, int y);
+    void FireClickByLocation(int x, int y) throws Exception ;
 
-    void SetTrapFlag(boolean flag);
+    void SetTrapFlag(boolean flag) throws Exception ;
 
-    void AddStep(Tile tile);
+    void AddStep(Tile tile) throws Exception ;
 
-    void SetLocationOnScreenForAllTiles();
+    void SetLocationOnScreenForAllTiles() throws Exception ;
 
-    void RemoveStep(Tile tile);
+    void RemoveStep(Tile tile) throws Exception ;
 
-    Tile LastStep();
+    Tile LastStep() throws Exception ;
 
-    void SetGameMode(boolean mGameMode);
+    void SetGameMode(boolean mGameMode) throws Exception ;
 
-    void NotifyStep(Tile tile);
+    void NotifyStep(Tile tile) throws Exception ;
 
-    boolean NeighboursClicked(Tile tile);
+    boolean NeighboursClicked(Tile tile) throws Exception ;
 
-    void SetAllBoardNotClickable();
+    void SetAllBoardClickable(boolean clickable) throws Exception ;
 
-    void InsertIntoStack(Tile tile);
+    void InsertIntoStack(Tile tile) throws Exception ;
 
-    void PopFromStack();
+    void PopFromStack() throws Exception ;
 
-    boolean HasEntrance();
+    boolean HasEntrance() throws Exception ;
 
-    void SetHasEntrance(boolean mHasEntrance);
+    void SetHasEntrance(boolean mHasEntrance) throws Exception ;
 
-    void clearVisited();
+    Activity GetActivity() throws Exception ;
 
-    Activity GetActivity();
+    void MakeToast (String text) throws Exception ;
 
-    void MakeToast (String text);
+    void SetTrapIcon(final int iconId) throws Exception ;
 
-    void SetTrapIcon(final int iconId);
+    boolean IsEntranceActivated() throws Exception ;
 
-    boolean IsEntranceActivated();
+    boolean IsExitActivated() throws Exception ;
 
-    boolean IsExitActivated();
+    void SetExitActivated(boolean mExitActivated) throws Exception ;
 
-    void SetExitActivated(boolean mExitActivated);
+    void SetEntranceActivated(boolean mEntranceActivated) throws Exception ;
 
-    void SetEntranceActivated(boolean mEntranceActivated);
+    void SetExitTile(Tile mExitTile) throws Exception ;
 
-    void SetExitTile(Tile mExitTile);
+    void SetEntranceTile(Tile mEntranceTile) throws Exception ;
 
-    void SetEntranceTile(Tile mEntranceTile);
+    Tile GetExitTile() throws Exception ;
 
-    Tile GetExitTile();
+    boolean IsHasExit() throws Exception ;
 
-    boolean IsHasExit();
+    void SetHasExit(boolean mHasExit) throws Exception ;
 
-    void SetHasExit(boolean mHasExit);
+    Tile GetEntranceTile() throws Exception ;
 
-    Tile GetEntranceTile();
-
-    boolean IsGameMode ();
+    boolean IsGameMode () throws Exception ;
 
 
 

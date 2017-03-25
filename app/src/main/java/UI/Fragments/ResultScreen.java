@@ -13,13 +13,17 @@ import android.app.Fragment;
 
 import com.example.cdv.amazingmaze.R;
 
+import Logic.ExceptionHandler;
 import UI.Board;
 import UI.FontCreator_Buttons;
 import UI.FontCreator_Logo;
 import activities.MainActivity;
 
 /**
- * Created by אילון on 26/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The ResultScreen fragment is inflated when the game is finished
+ *
  */
 
 public class ResultScreen extends Fragment {
@@ -38,7 +42,14 @@ public class ResultScreen extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActivity = (MainActivity )getActivity();
+        mActivity = (MainActivity)getActivity();
+        try {
+            mActivity.GetController().KillBoardThreads();
+        }catch (Exception e){
+            e.printStackTrace();
+            new ExceptionHandler(e.toString(), mActivity.GetFireBaseOperator());
+        }
+        mActivity.GetController().ResetFlags();
         mImageView = (ImageView) getActivity().findViewById(R.id.endImageView);
         mPlayAgain = (FontCreator_Buttons) getActivity().findViewById(R.id.btn_play_again);
         mPlayAgain.setOnClickListener(new View.OnClickListener() {
@@ -53,6 +64,7 @@ public class ResultScreen extends Fragment {
             mActivity.GetFireBaseOperator().UpdateCoins(mActivity.GetController().GetUser());
             winAnimation();
         }else{
+            mActivity.GetController().GetRival().AddToCoins(GamePlay.VALUE_FOR_WIN);
             mActivity.GetFireBaseOperator().UpdateCoins(mActivity.GetController().GetRival());
             loseAnimation();
         }

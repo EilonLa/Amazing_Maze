@@ -3,7 +3,11 @@ package DB;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Created by אילון on 06/02/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The DataBaseManager is in charge of activating the dataBase commands
+ * by FIFO logic. This is because there are different threads calling database commands.
+ *
  */
 
 public class DataBaseManager extends Thread  {

@@ -22,11 +22,15 @@ import java.util.ArrayList;
 import activities.MainActivity;
 
 /**
- * Created by אילון on 26/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The FindAMaze fragment is inflated when the user wants to play and he needs to search for a maze
+ *
  */
 
 public class FindAMaze extends Fragment {
-
+    private static final String NO_BOARD_FOR_RIVAL_ERROR = "The requested user is not ready with his Maze!";
+    private static final String OWN_MAZE_ERROR = "You can't play your own Maze!";
     private SearchView mSearchView;
     private MainActivity mActivity;
 
@@ -71,13 +75,15 @@ public class FindAMaze extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Toast.makeText(mActivity.getBaseContext(), newText, Toast.LENGTH_LONG).show();
+//                Toast.makeText(mActivity.getBaseContext(), newText, Toast.LENGTH_LONG).show();
                 return false;
             }
         });
 
 
     }
+
+
 
     public static class QueryResultListFragment extends ListFragment implements AdapterView.OnItemClickListener {
         private RivalViewAdapter mAdapter;
@@ -100,7 +106,7 @@ public class FindAMaze extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             final String userName = getListView().getAdapter().getItem(i).toString();
-            if (userName != null) {
+            if (userName != null && !userName.equals(mActivity.GetController().GetUser().GetUserName())) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -108,12 +114,27 @@ public class FindAMaze extends Fragment {
                         mActivity.GetFireBaseOperator().GetRivalUser(userName);
                         while (mActivity.GetController().IsWaitingForFireBase()) {
                         }
-                        mActivity.getFragmentManager().beginTransaction().remove(mActivity.getFragmentManager().findFragmentById(R.id.container_find)).addToBackStack(null).commit();
-                        mActivity.getFragmentManager().beginTransaction().add(R.id.container_board,new GamePlay()).addToBackStack(null).commit();
+                        if (mActivity.GetController().GetDoesRivalHasBoard()) {
+                            mActivity.GetController().SetIsSearching(false);
+                            mActivity.getFragmentManager().beginTransaction().remove(mActivity.getFragmentManager().findFragmentById(R.id.container_find)).addToBackStack(null).commit();
+                            mActivity.getFragmentManager().beginTransaction().add(R.id.container_board, new GamePlay()).addToBackStack(null).commit();
+                        }else{
+                            mActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(mActivity,NO_BOARD_FOR_RIVAL_ERROR,Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
                     }
                 }).start();
             }
+            if (userName != null && userName.equals(mActivity.GetController().GetUser().GetUserName())){
+                Toast.makeText(mActivity,OWN_MAZE_ERROR,Toast.LENGTH_LONG).show();
+            }
         }
+
+
 
         public void SetListOfItems() {
             mAdapter = new RivalViewAdapter(getActivity(), R.layout.items_list, mActivity.GetController().GetOptionalUsers());

@@ -5,19 +5,19 @@
     >
     <RelativeLayout
         android:layout_width="250dp"
-        android:layout_height="100dp"
+        android:layout_height="250dp"
         android:id="@+id/fragment_logged_in"
         android:paddingTop="30dp"
         android:layout_centerInParent="true">
 
         <UI.FontCreator_Buttons
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="230dp"
             android:id="@+id/user_name_logged"
             android:layout_centerHorizontal="true"
-            android:paddingTop="15dp"
-            android:textSize="30dp"
-            android:textColor="@android:color/black"
+            android:textSize="37dp"
+            android:textStyle="italic"
+            android:textColor="#22aabb"
 
             />
 

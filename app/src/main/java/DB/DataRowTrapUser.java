@@ -1,7 +1,10 @@
 package DB;
 
 /**
- * Created by אילון on 31/01/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * Class represents the connection between the Trap and the User in the DB
+ *
  */
 
 public class DataRowTrapUser {

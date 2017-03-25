@@ -18,11 +18,14 @@ import com.example.cdv.amazingmaze.R;
 
 import DB.DataRowUser;
 import Logic.User;
-import UI.Fragments.LoggedInFragment;
 import activities.MainActivity;
 
+
 /**
- * Created by אילון on 02/03/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * The SignupFragment fragment is inflated when the user wants to sign up for the first time
+ *
  */
 
 public class SignUpFragment extends Fragment {
@@ -38,12 +41,15 @@ public class SignUpFragment extends Fragment {
 
     private MainActivity mActivity;
 
-    private Object mLockObject = new Object();
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.sign_up, container, false);
+        if(mActivity == null){
+            mActivity = (MainActivity)getActivity();
+        }
+        mActivity.GetController().SetIsSignUp(true);
         return view;
     }
 
@@ -120,7 +126,7 @@ public class SignUpFragment extends Fragment {
                             if (mActivity != null) {
                                 mActivity.GetDBOperator().AddRow_User(dataForUser);
                             }
-                            String userId = mActivity.GetFireBaseOperator().SaveUserToFireBaseFirstTime(userName, password, User.DEFAULT_NUM_OF_COINS,null);
+                            String userId = mActivity.GetFireBaseOperator().SaveUserToFireBase(userName, password, User.DEFAULT_NUM_OF_COINS,null);
                             mActivity.GetController().SetUser(new User(userId, password, userName, User.DEFAULT_NUM_OF_COINS, null));
                             SharedPreferences.Editor editor = mActivity.GetController().GetSharedPref().edit();
                             editor.putString("lastId", mActivity.GetController().GetUser().GetId());

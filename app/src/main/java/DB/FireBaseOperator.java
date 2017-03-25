@@ -12,18 +12,22 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import Logic.ExceptionHandler;
 import Logic.Tile;
 import Logic.Trap;
 import Logic.User;
 import UI.Board;
 import activities.MainActivity;
-
 /**
- * Created by אילון on 02/03/2017.
+ * Created by Eilon Laor & Dvir Twina on 06/02/2017.
+ *
+ * Class represents the operator of FireBase
+ *
  */
 
 public class FireBaseOperator {
@@ -32,189 +36,253 @@ public class FireBaseOperator {
     public static final String USER_PASSWORD_TAG = "user_password";
     public static final String USER_COINS_TAG = "user_coins";
     public static final String USER_TRAPS_TAG = "Traps";
-
     public static final String BOARD_TAG = "board";
-
-    public static final String TILE_TAG = "Tile";
     public static final String TILE_ID_TAG = "Tile List";
-    public static final String TILE_ROW_TAG = "row";
-    public static final String TILE_COL_TAG = "col";
-    public static final String TILE_IS_ENTRANCE_TAG = "is_entrance";
-    public static final String TILE_IS_EXIT_TAG = "is_exit";
-    public static final String TILE_IS_WALL_TAG = "is_wall";
-    public static final String TILE_TRAP_ID_TAG = "trap_id";
-    public static final String USER_TRAP_TAG = "user_trap";
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    public static final String LOG_TAG = "Error Log";
     private DatabaseReference mRootReference;
-    private FirebaseAuth mAuth;
     private MainActivity mActivity;
 
     public FireBaseOperator(MainActivity mainActivity) {
         mActivity = mainActivity;
         mRootReference = FirebaseDatabase.getInstance().getReference();
         mRootReference.getDatabase().goOnline();
-        mAuth = FirebaseAuth.getInstance();
     }
 
+    public MainActivity GetActivity(){
+        return mActivity;
+    }
+
+    /**
+     *
+     * inserts the updated traps to the firebase
+     * @param user that owns the traps
+     */
     public void UpdateTraps(User user) {
-        int counter = 1;
-        HashMap<String, Integer> map = new HashMap<>();
-        for (int index : user.GenerateListOfTrapIndex()) {
-            map.put(USER_TRAPS_TAG + " " + counter, index);
-            counter++;
-        }
-        mRootReference.child(USER_TAG).child(user.GetId()).child(USER_TRAPS_TAG).setValue(map);
-    }
-
-    public void UpdateCoins(User user) {
-        mRootReference.child(USER_TAG).child(user.GetId()).child(USER_COINS_TAG).setValue(user.GetCoins());
-    }
-
-    public String SaveUserToFireBaseFirstTime(final String userName, final String password, final int coins, ArrayList<Trap> traps) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put(USER_NAME_TAG, userName);
-        map.put(USER_PASSWORD_TAG, password);
-        map.put(USER_COINS_TAG, User.DEFAULT_NUM_OF_COINS);
-        int counter = 1;
-        if (traps != null) {
-            for (Trap trap : traps) {
-                map.put(USER_TRAPS_TAG + " " + counter, trap);
+        try {
+            int counter = 1;
+            HashMap<String, Integer> map = new HashMap<>();
+            for (int index : user.GenerateListOfTrapIndex()) {
+                map.put(USER_TRAPS_TAG + " " + counter, index);
                 counter++;
             }
+            mRootReference.child(USER_TAG).child(user.GetId()).child(USER_TRAPS_TAG).setValue(map);
+        }catch (Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
         }
-        DatabaseReference ref = mRootReference.child(USER_TAG).push();
-        ref.setValue(map);
-        return ref.getKey();
     }
 
-    public void GetDataForBoard(final User user) {
-        if (user.GetId() != null) {
-            if (mRootReference.child(BOARD_TAG).child(user.GetId()).child(TILE_ID_TAG) == null) {
-                mActivity.GetController().IsWaitingForFireBase(false);
+    /**
+     *
+     * inserts the updated coins to the firebase
+     * @param user that owns the coins
+     */
+    public void UpdateCoins(User user) {
+        try {
+            mRootReference.child(USER_TAG).child(user.GetId()).child(USER_COINS_TAG).setValue(user.GetCoins());
+        }catch (Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
+        }
+    }
+
+    /**
+     * @param userName
+     * @param password
+     * @param coins
+     * @param traps
+     * @return the auto generated id value from the fire base
+     */
+    public String SaveUserToFireBase(final String userName, final String password, final int coins, ArrayList<Trap> traps) {
+        try {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put(USER_NAME_TAG, userName);
+            map.put(USER_PASSWORD_TAG, password);
+            map.put(USER_COINS_TAG, User.DEFAULT_NUM_OF_COINS);
+            int counter = 1;
+            if (traps != null) {
+                for (Trap trap : traps) {
+                    map.put(USER_TRAPS_TAG + " " + counter, trap);
+                    counter++;
+                }
             }
-            mRootReference.child(BOARD_TAG).child(user.GetId()).child(TILE_ID_TAG).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    ArrayList<DataRowBoard> dataRowBoard = new ArrayList<>();
-                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        ArrayList<Object> tempList = (ArrayList<Object>) data.getValue();
-                        if (tempList != null) {
-                            long tempRow = (long) tempList.get(0);
-                            int row = (int) tempRow;
-                            long tempCol = (long) tempList.get(1);
-                            int col = (int) tempCol;
-                            String tileId = dataSnapshot.getKey();
-                            boolean isEntrance = (boolean) tempList.get(2);
-                            boolean isExit = (boolean) tempList.get(3);
-                            boolean isWall = (boolean) tempList.get(4);
-                            long tempIndex = (long) tempList.get(5);
-                            int trapIndex = (int) tempIndex;
-                            dataRowBoard.add(new DataRowBoard(user.GetId(), row, col, tileId, isEntrance, isExit, isWall, trapIndex));
-                        }
-                    }
-                    if (user.GetPassword() != null) {
-                        mActivity.GetController().GetUser().SetListDataBoardFromFireBase(dataRowBoard);
-                    } else {
-                        mActivity.GetController().SetRivalData(dataRowBoard);
-                    }
+            DatabaseReference ref = mRootReference.child(USER_TAG).push();
+            ref.setValue(map);
+            return ref.getKey();
+        }catch (Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
+        }
+        return "";
+    }
+
+
+    /**
+     * gets the raw data for the board's creation
+     * @param user
+     */
+    public void GetDataForBoard(final User user) {
+        try {
+            if (user.GetId() != null) {
+                if (mRootReference.child(BOARD_TAG).child(user.GetId()).child(TILE_ID_TAG) == null) {
                     mActivity.GetController().IsWaitingForFireBase(false);
                 }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        } else {
-
-        }
-    }
-
-    public String SaveBoardToFireBase(Board board, User user) {
-        synchronized (MainActivity.mLockObject) {
-            mRootReference.child(BOARD_TAG).child(user.GetId()).child(TILE_ID_TAG).removeValue();
-            DatabaseReference ref = mRootReference.child(BOARD_TAG).child(user.GetId()).child(TILE_ID_TAG);
-            ArrayList<ArrayList<Object>> data = new ArrayList<>();
-            for (int i = 0; i < Board.NUM_OF_ROWS; i++) {
-                for (int j = 0; j < Board.NUM_OF_COLS; j++) {
-                    Tile tile = board.GetTiles()[i][j];
-                    DatabaseReference tempRef;
-                    tempRef = ref.push();
-                    tile.SetTileId(tempRef.getKey());
-                    ArrayList<Object> tempList = new ArrayList<>();
-                    tempList.add(i);
-                    tempList.add(j);
-                    tempList.add(tile.IsEntrance());
-                    tempList.add(tile.IsExit());
-                    tempList.add(tile.IsWall());
-                    tempList.add(tile.GetTrapIndex());
-                    data.add(tempList);
-                    tempRef.setValue(tempList);
-                }
-            }
-
-            return ref.getKey();
-        }
-        //ref.setValue(data);
-    }
-
-    public void GetUserFromFireBase(final String userId, final String userName, final String password) {
-        if (userId != null && mRootReference.child(USER_TAG).child(userId) != null) {
-            mRootReference.child(USER_TAG).child(userId).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.getValue() != null) {
-                        String userName = dataSnapshot.child(USER_NAME_TAG).getValue(String.class);
-                        String password = dataSnapshot.child(USER_PASSWORD_TAG).getValue(String.class);
-                        long coins = dataSnapshot.child(USER_COINS_TAG).getValue(Long.class);
-                        if (userName != null) {
-                            mActivity.GetController().SetUser(new User(userId, password, userName, (int) coins, null));
-                            GetUserTrapsFromFireBase(mActivity.GetController().GetUser());
-
+                mRootReference.child(BOARD_TAG).child(user.GetId()).child(TILE_ID_TAG).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (user.IsRival() && dataSnapshot.getValue() != null) {
+                            /*we need this because if rival do not have a board we dont want
+                             the user to play an empty game*/
+                            mActivity.GetController().SetDoesRivalHasBoard(true);
                         }
-                    } else {
+                        else if (user.IsRival() && dataSnapshot.getValue() == null){
+                            mActivity.GetController().SetDoesRivalHasBoard(false);
+                        }
+                        ArrayList<DataRowBoard> dataRowBoard = new ArrayList<>();
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            ArrayList<Object> tempList = (ArrayList<Object>) data.getValue();
+                            if (tempList != null) {
+                                long tempRow = (long) tempList.get(0);
+                                int row = (int) tempRow;
+                                long tempCol = (long) tempList.get(1);
+                                int col = (int) tempCol;
+                                String tileId = dataSnapshot.getKey();
+                                boolean isEntrance = (boolean) tempList.get(2);
+                                boolean isExit = (boolean) tempList.get(3);
+                                boolean isWall = (boolean) tempList.get(4);
+                                long tempIndex = (long) tempList.get(5);
+                                int trapIndex = (int) tempIndex;
+                                dataRowBoard.add(new DataRowBoard(user.GetId(), row, col, tileId, isEntrance, isExit, isWall, trapIndex));
+                            }
+                        }
+                        //if we are on create mode
+                        if (user.GetPassword() != null) {
+                            mActivity.GetController().GetUser().SetListDataBoardFromFireBase(dataRowBoard);
+                        }
+                        //if we are not on create mode and getting rival data
+                        else {
+                            mActivity.GetController().SetRivalData(dataRowBoard);
+                        }
                         mActivity.GetController().IsWaitingForFireBase(false);
                     }
-                }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        } else if (userId == null && userName != null) {
-            mRootReference.child(USER_TAG).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    boolean userFound = false;
-                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        HashMap<String, Object> dataMap = (HashMap<String, Object>) data.getValue();
-                        String tempUserName = dataMap.get(USER_NAME_TAG).toString();
-                        String tempPassword = dataMap.get(USER_PASSWORD_TAG).toString();
-                        if (tempUserName.equals(userName) && tempPassword.equals(password)) {
-                            String userId = data.getKey().toString();
-                            long coins = (long) dataMap.get(USER_COINS_TAG);
-                            mActivity.GetController().SetUser(new User(userId, password, userName, (int) coins, null));
-                            userFound = true;
-                            GetUserTrapsFromFireBase(mActivity.GetController().GetUser());
-                        }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        mActivity.GetController().IsWaitingForFireBase(false);
                     }
-                    if (!userFound) {
-                        Toast.makeText(mActivity, "Server error, no such User or Password", Toast.LENGTH_LONG).show();
-                    }
-                }
+                });
+            } else {
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        } else {
-            mActivity.GetController().IsWaitingForFireBase(false);
+            }
+        }catch (Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
         }
-
     }
 
+    /**
+     * saves the board data to the firebase
+     * @param board
+     * @param user
+     * @return The auto generated board id from the firebase
+     */
+    public String SaveBoardToFireBase(Board board, User user) {
+        try {
+            synchronized (MainActivity.mLockObject) {
+                mRootReference.child(BOARD_TAG).child(user.GetId()).child(TILE_ID_TAG).removeValue();
+                DatabaseReference ref = mRootReference.child(BOARD_TAG).child(user.GetId()).child(TILE_ID_TAG);
+                ArrayList<ArrayList<Object>> data = new ArrayList<>();
+                for (int i = 0; i < Board.NUM_OF_ROWS; i++) {
+                    for (int j = 0; j < Board.NUM_OF_COLS; j++) {
+                        Tile tile = board.GetTiles()[i][j];
+                        DatabaseReference tempRef;
+                        tempRef = ref.push();
+                        tile.SetTileId(tempRef.getKey());
+                        ArrayList<Object> tempList = new ArrayList<>();
+                        tempList.add(i);
+                        tempList.add(j);
+                        tempList.add(tile.IsEntrance());
+                        tempList.add(tile.IsExit());
+                        tempList.add(tile.IsWall());
+                        tempList.add(tile.GetTrapIndex());
+                        data.add(tempList);
+                        tempRef.setValue(tempList);
+                    }
+                }
+
+                return ref.getKey();
+            }
+        }catch (Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
+        }
+        return "";
+    }
+
+
+    /**
+     * @param userId - if null, it means we creating by user name
+     * @param userName will always be available
+     * @param password - only after login in the device. Rival's password is not visible
+     */
+    public void GetUserFromFireBase(final String userId, final String userName, final String password) {
+        try {
+            if (userId != null && mRootReference.child(USER_TAG).child(userId) != null) {
+                mRootReference.child(USER_TAG).child(userId).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getValue() != null) {
+                            String userName = dataSnapshot.child(USER_NAME_TAG).getValue(String.class);
+                            String password = dataSnapshot.child(USER_PASSWORD_TAG).getValue(String.class);
+                            long coins = dataSnapshot.child(USER_COINS_TAG).getValue(Long.class);
+                            if (userName != null) {
+                                mActivity.GetController().SetUser(new User(userId, password, userName, (int) coins, null));
+                                GetUserTrapsFromFireBase(mActivity.GetController().GetUser());
+
+                            }
+                        } else {
+                            mActivity.GetController().IsWaitingForFireBase(false);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+            } else if (userId == null && userName != null) {
+                mRootReference.child(USER_TAG).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        boolean userFound = false;
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            HashMap<String, Object> dataMap = (HashMap<String, Object>) data.getValue();
+                            String tempUserName = dataMap.get(USER_NAME_TAG).toString();
+                            String tempPassword = dataMap.get(USER_PASSWORD_TAG).toString();
+                            if (tempUserName.equals(userName) && tempPassword.equals(password)) {
+                                String userId = data.getKey().toString();
+                                long coins = (long) dataMap.get(USER_COINS_TAG);
+                                mActivity.GetController().SetUser(new User(userId, password, userName, (int) coins, null));
+                                userFound = true;
+                                GetUserTrapsFromFireBase(mActivity.GetController().GetUser());
+                            }
+                        }
+                        if (!userFound) {
+                            Toast.makeText(mActivity, "Server error, no such User or Password", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            } else {
+                mActivity.GetController().IsWaitingForFireBase(false);
+            }
+        }catch (Exception e){
+            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
+        }
+    }
+
+    /**
+     * gets user by user name
+     * @param userName
+     */
     public void GetRivalUser(final String userName) {
         if (userName.equals(mActivity.GetController().GetUser().GetUserName())) {
             return;
@@ -222,7 +290,6 @@ public class FireBaseOperator {
         mRootReference.child(USER_TAG).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.i("FireBase", "GetRivalUser");
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     if (data.child(USER_NAME_TAG).getValue().toString().equals(userName)) {
                         long coins = data.child(USER_COINS_TAG).getValue(Long.class);
@@ -232,6 +299,7 @@ public class FireBaseOperator {
                         break;
                     }
                 }
+
             }
 
             @Override
@@ -241,6 +309,10 @@ public class FireBaseOperator {
         });
     }
 
+    /**
+     * finds matching user names containing string
+     * @param query
+     */
     public void GetOptionalUsersForGame(final String query) {
         mRootReference.child(USER_TAG).addValueEventListener(new ValueEventListener() {
             @Override
@@ -260,6 +332,10 @@ public class FireBaseOperator {
         });
     }
 
+    /**
+     * get list of user traps from firebase
+     * @param user
+     */
     public void GetUserTrapsFromFireBase(final User user) {
         if (mRootReference.child(USER_TAG).child(user.GetId()).child(USER_TRAPS_TAG) != null) {
             mRootReference.child(USER_TAG).child(user.GetId()).child(USER_TRAPS_TAG).addValueEventListener(new ValueEventListener() {
@@ -277,5 +353,15 @@ public class FireBaseOperator {
         } else {
             GetDataForBoard(mActivity.GetController().GetUser());
         }
+    }
+
+    /**
+     * Records All Exceptions to the fireBase
+     * @param errorText
+     */
+    public void InsertErrorLog(String errorText){
+        DatabaseReference ref = mRootReference.child(LOG_TAG).push();
+        ref.setValue(errorText);
+
     }
 }
