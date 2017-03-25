@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "222313356514",
+    "firebase_url": "https://amazingmaze-268eb.firebaseio.com",
+    "project_id": "amazingmaze-268eb",
+    "storage_bucket": "amazingmaze-268eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222313356514:android:e7d7cfa3b7e0973f",
+        "android_client_info": {
+          "package_name": "com.example.cdv.amazingmaze"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "222313356514-ecs3iaa1a2j71ge66nargl7165itc5qn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cdv.amazingmaze",
+            "certificate_hash": "6679505f06e4b7a8c5c306c6a2f3742199a67697"
+          }
+        },
+        {
+          "client_id": "222313356514-ehgoaut3q25o40g2uatcoui780qr7r6v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWyhMDzsAnzvthhAFJZ84go7HtYDh3LDU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "222313356514-ehgoaut3q25o40g2uatcoui780qr7r6v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

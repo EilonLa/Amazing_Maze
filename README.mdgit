@@ -1,0 +1,1 @@
+"# Amazing_Maze"  initgit add README.mdgit commit -m "first commit"git remote add origin https://github.com/EilonLa/Amazing_Maze.gitgit push -u origin master
