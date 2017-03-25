@@ -7,6 +7,7 @@
         android:icon="@mipmap/logo"
         android:supportsRtl="false"
         android:largeHeap="true"
+        android:label="Amazing Maze"
         android:theme="@android:style/Theme.Black.NoTitleBar">
         >
         <activity android:name="activities.MainActivity"
