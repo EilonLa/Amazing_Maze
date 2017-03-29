@@ -47,7 +47,7 @@
     </RelativeLayout>
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="#a0522d"
         android:id="@android:id/list"
         style="@style/Widget.AppCompat.ListView.Menu"

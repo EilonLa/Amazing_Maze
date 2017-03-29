@@ -622,6 +622,9 @@ public class Board extends ImageView {
                 mTiles[i][j].setClickable(clickable);
             }
         }
+        mApprove.setClickable(clickable);
+       // mChest.setClickable(clickable);
+        mUndo.setClickable(clickable);
     }
 
     public void SetTrapIcon(final int iconId) throws Exception{

@@ -29,7 +29,6 @@ public class TrapViewAdapter extends ArrayAdapter {
 
     public TrapViewAdapter(Context context, int ResourceId, ArrayList<Object[]> data/*, int iconId,String mName, String mDescription, int mCount*/) {
         super(context,ResourceId);
-
         Log.i("mData size",""+data.size());
         this.mData = data;
         mInflater = (LayoutInflater) context

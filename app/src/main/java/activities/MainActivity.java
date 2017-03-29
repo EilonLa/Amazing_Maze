@@ -2,6 +2,7 @@ package activities;
 
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -117,6 +118,7 @@ public class MainActivity extends FragmentActivity {
                             Toast.makeText(MainActivity.this, "You need to log in first", Toast.LENGTH_LONG).show();
                         }
                     }
+
                 }
             });
             mFindMaze = findViewById(R.id.Find_maze);
@@ -294,6 +296,7 @@ public class MainActivity extends FragmentActivity {
                mController.SetListFlag(false);
                getFragmentManager().popBackStack();
                mController.GetActiveBoard().SetAllBoardClickable(true);
+               backPressedNeeded = false;
            }
 
            if (backPressedNeeded) {
