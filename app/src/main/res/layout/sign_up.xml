@@ -39,7 +39,6 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="30dp"
                     android:text="Register"
                     android:textSize="30dp"
                     android:textColor="#000"

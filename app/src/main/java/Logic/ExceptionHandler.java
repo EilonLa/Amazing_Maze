@@ -10,8 +10,8 @@ import DB.FireBaseOperator;
  */
 
 public class ExceptionHandler {
-    public ExceptionHandler(String message, FireBaseOperator fireBaseOperator) {
-        fireBaseOperator.InsertErrorLog(message);
+    public ExceptionHandler(Exception e, FireBaseOperator fireBaseOperator) {
+        fireBaseOperator.InsertErrorLog( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber());
         fireBaseOperator.GetActivity().finish();
     }
 }

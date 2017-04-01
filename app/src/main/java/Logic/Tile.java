@@ -194,7 +194,7 @@ public class Tile extends ImageView {
                 }catch (Exception e){
                     e.printStackTrace();
                     try {
-                        new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mObserver.GetActivity().GetFireBaseOperator());
+                        new ExceptionHandler( e, mObserver.GetActivity().GetFireBaseOperator());
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }

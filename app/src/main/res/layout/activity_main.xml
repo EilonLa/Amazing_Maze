@@ -8,10 +8,6 @@
     android:background="#fff"
     android:orientation="vertical">
 
-    <!--<include-->
-    <!--android:id="@+id/tool_bar"-->
-    <!--layout="@layout/tool_bar"-->
-    <!--&gt;</include>-->
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -44,10 +40,8 @@
                     android:text="The amazing maze"
                     android:textColor="@android:color/black"
                     android:textSize="23dp"
-
+                    android:id="@+id/intro_logo"
                     />
-
-
 
 
         </RelativeLayout>
@@ -135,8 +129,6 @@
         </RelativeLayout>
 
 
-
-
         <FrameLayout
             android:id="@+id/log_container"
             android:layout_width="350dp"
@@ -179,6 +171,55 @@
             android:layout_centerInParent="true">
 
         </FrameLayout>
+
+        <RelativeLayout
+            android:id="@+id/container_intro_background"
+            android:background="@drawable/intro_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true">
+
+            <UI.FontCreator_Logo
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="120dp"
+                android:layout_centerHorizontal="true"
+                android:text="The amazing maze"
+                android:textColor="@android:color/black"
+                android:textSize="23dp"
+                android:id="@+id/fontCreator_Logo" />
+
+            <ImageView
+                android:id="@+id/logo_intro"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_below="@id/fontCreator_Logo"
+                android:layout_centerHorizontal="true"
+                android:background="@mipmap/logo" />
+
+            <UI.FontCreator_Buttons
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="120dp"
+                android:textAlignment="center"
+                android:text="Created by Dvir Twina and Eilon Laor"
+                android:textColor="@android:color/black"
+                android:textSize="17dp"
+                android:layout_below="@+id/fontCreator_Logo"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:id="@+id/fontCreator_Buttons" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/run6"
+                android:layout_centerInParent="true"
+                android:layout_below="@id/fontCreator_Buttons"
+                />
+
+
+        </RelativeLayout>
 
     </RelativeLayout>
 

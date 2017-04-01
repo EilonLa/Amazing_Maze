@@ -41,14 +41,14 @@ public class CreateAMaze extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
                 
-                new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                new ExceptionHandler( e, mActivity.GetFireBaseOperator());
             }
         } else {
             try {
                 new Board(mActivity.GetController().GetUser().GetBoard());
             } catch (Exception e) {
                 e.printStackTrace();
-                new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                new ExceptionHandler( e, mActivity.GetFireBaseOperator());
             }
         }
         mBackBtn = (Button) getActivity().findViewById(R.id.back_create);

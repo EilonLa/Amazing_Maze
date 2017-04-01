@@ -247,6 +247,10 @@ public class GameController {
 
     public void SetListFlag(boolean flag) {
         mListFlag = flag;
+        try {
+            mActiveBoard.SetAllBoardClickable(!flag);
+        }catch (Exception e){
+        }
     }
 
     public boolean GetIsCreating() {

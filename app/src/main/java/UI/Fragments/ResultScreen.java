@@ -47,7 +47,7 @@ public class ResultScreen extends Fragment {
             mActivity.GetController().KillBoardThreads();
         }catch (Exception e){
             e.printStackTrace();
-            new ExceptionHandler(e.toString(), mActivity.GetFireBaseOperator());
+            new ExceptionHandler(e, mActivity.GetFireBaseOperator());
         }
         mActivity.GetController().ResetFlags();
         mImageView = (ImageView) getActivity().findViewById(R.id.endImageView);

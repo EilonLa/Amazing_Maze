@@ -117,7 +117,7 @@ public class TrapListFragment extends ListFragment implements AdapterView.OnItem
             }
         }catch (Exception e){
             e.printStackTrace();
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e, mActivity.GetFireBaseOperator());
         }
     }
 

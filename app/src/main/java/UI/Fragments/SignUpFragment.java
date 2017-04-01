@@ -85,8 +85,13 @@ public class SignUpFragment extends Fragment {
         mPasswrdConEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPasswrdConEditText.setText("");
-                mPasswrdConEditText.setTextColor(Color.BLACK);
+                if (mPasswrdConEditText.getText().length() != 0){
+                    mLoginBtn.callOnClick();
+                }
+                else {
+                    mPasswrdConEditText.setText("");
+                    mPasswrdConEditText.setTextColor(Color.BLACK);
+                }
             }
         });
 

@@ -52,7 +52,7 @@ public class GamePlay extends Fragment {
             });
         }catch (Exception e){
             e.printStackTrace();
-            new ExceptionHandler(e.toString(), mActivity.GetFireBaseOperator());
+            new ExceptionHandler(e, mActivity.GetFireBaseOperator());
         }
         mSeconds = Integer.parseInt(mGameTimer.getText().toString());
     }
@@ -65,7 +65,7 @@ public class GamePlay extends Fragment {
             SetTimer();
         }catch (Exception e){
             e.printStackTrace();
-            new ExceptionHandler(e.toString(), mActivity.GetFireBaseOperator());
+            new ExceptionHandler(e, mActivity.GetFireBaseOperator());
         }
         return view;
     }
@@ -101,7 +101,7 @@ public class GamePlay extends Fragment {
                         TimeUp();
                     }catch (Exception e){
                         e.printStackTrace();
-                        new ExceptionHandler(e.toString(), mActivity.GetFireBaseOperator());
+                        new ExceptionHandler(e, mActivity.GetFireBaseOperator());
                     }
                 }
             });

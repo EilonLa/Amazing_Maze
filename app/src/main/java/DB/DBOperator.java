@@ -56,7 +56,7 @@ public class DBOperator extends SQLiteOpenHelper {
 
         } catch (Exception e) {
             onUpgrade(db, DB_VERSION, 0);
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
         }
     }
 
@@ -73,7 +73,7 @@ public class DBOperator extends SQLiteOpenHelper {
             onCreate(db);
         }catch(Exception e){
             e.printStackTrace();
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
         }
     }
 
@@ -89,7 +89,7 @@ public class DBOperator extends SQLiteOpenHelper {
             db.insert(FeedReaderContract.FeedData.TABLE_NAME_USER, null, values);
             db.close(); // Closing database connection
         }catch (Exception e){
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
         }
     }
     
@@ -107,7 +107,7 @@ public class DBOperator extends SQLiteOpenHelper {
             db.insert(FeedReaderContract.FeedData.TABLE_NAME_TILE, null, values);
             //db.close(); // Closing database connection
         }catch (Exception e){
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
         }
     }
 
@@ -129,7 +129,7 @@ public class DBOperator extends SQLiteOpenHelper {
             Log.i("ending save", "");
             // db.close(); // Closing database connection
         }catch (Exception e){
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
         }
     }
 
@@ -143,7 +143,7 @@ public class DBOperator extends SQLiteOpenHelper {
             db.insert(FeedReaderContract.FeedData.TABLE_NAME_TRAP_TILE, null, values);
             // db.close(); // Closing database connection
         }catch(Exception e){
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
         }
     }
     
@@ -169,7 +169,7 @@ public class DBOperator extends SQLiteOpenHelper {
         } catch (Exception e) {
             e.printStackTrace();
             Log.i("", CREATE_DB_TAG);
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -199,7 +199,7 @@ public class DBOperator extends SQLiteOpenHelper {
             return row;
         } catch (Exception e) {
             Log.i("", CREATE_DB_TAG);
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -227,7 +227,7 @@ public class DBOperator extends SQLiteOpenHelper {
             return rows;
         } catch (Exception e) {
             Log.i("", CREATE_DB_TAG);
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -252,7 +252,7 @@ public class DBOperator extends SQLiteOpenHelper {
             return row;
         } catch (Exception e) {
             Log.i("", CREATE_DB_TAG);
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -280,7 +280,7 @@ public class DBOperator extends SQLiteOpenHelper {
         } catch (Exception e) {
             Log.i("", CREATE_DB_TAG);
             e.printStackTrace();
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -305,7 +305,7 @@ public class DBOperator extends SQLiteOpenHelper {
             return row;
         } catch (Exception e) {
             Log.i("", CREATE_DB_TAG);
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
             onCreate(db);
         }
         return null;
@@ -320,7 +320,7 @@ public class DBOperator extends SQLiteOpenHelper {
             db.execSQL(query);
         } catch (Exception e) {
             Log.i("", CREATE_DB_TAG);
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),mActivity.GetFireBaseOperator());
+            new ExceptionHandler( e,mActivity.GetFireBaseOperator());
             onCreate(db);
         }
     }

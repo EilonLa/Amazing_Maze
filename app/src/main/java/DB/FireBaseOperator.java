@@ -67,7 +67,7 @@ public class FireBaseOperator {
             }
             mRootReference.child(USER_TAG).child(user.GetId()).child(USER_TRAPS_TAG).setValue(map);
         }catch (Exception e){
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
+            new ExceptionHandler( e,this);
         }
     }
 
@@ -80,7 +80,7 @@ public class FireBaseOperator {
         try {
             mRootReference.child(USER_TAG).child(user.GetId()).child(USER_COINS_TAG).setValue(user.GetCoins());
         }catch (Exception e){
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
+            new ExceptionHandler( e,this);
         }
     }
 
@@ -108,7 +108,7 @@ public class FireBaseOperator {
             ref.setValue(map);
             return ref.getKey();
         }catch (Exception e){
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
+            new ExceptionHandler( e,this);
         }
         return "";
     }
@@ -172,7 +172,7 @@ public class FireBaseOperator {
 
             }
         }catch (Exception e){
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
+            new ExceptionHandler( e,this);
         }
     }
 
@@ -209,7 +209,7 @@ public class FireBaseOperator {
                 return ref.getKey();
             }
         }catch (Exception e){
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
+            new ExceptionHandler( e,this);
         }
         return "";
     }
@@ -275,7 +275,7 @@ public class FireBaseOperator {
                 mActivity.GetController().IsWaitingForFireBase(false);
             }
         }catch (Exception e){
-            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(),this);
+            new ExceptionHandler( e,this);
         }
     }
 

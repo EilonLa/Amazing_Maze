@@ -40,7 +40,7 @@ import activities.MainActivity;
 /**
  * Created by Eilon Laor & Dvir Twina on 06/02/2017.
  *
- * The Board is an ImageView that contains all the tiles
+ * The Board is an ImageView that contains all the tiles.
  *
  */
 
@@ -56,6 +56,8 @@ public class Board extends ImageView {
     public static final int NUM_OF_COLS = 20;
     public static int PROTECTION = 0;
     private ArrayList<Thread> mAllThreads;
+
+    //flags
     private boolean mHasEntrance = false;
     private boolean mHasExit = false;
     private boolean mExitActivated = false;
@@ -64,6 +66,9 @@ public class Board extends ImageView {
     private boolean mDIdPlayerWin = false;
     private boolean mGameMode;
     private boolean mFromCopyConstructor;
+    private boolean mIsInSavingProcess = false;
+    //
+
     private static Tile[][] mTiles;
     private MainActivity mActivity;
     private LinearLayout mBoardLayout;
@@ -98,75 +103,9 @@ public class Board extends ImageView {
         mActivity.GetController().SetGameMode(mGameMode);
         SetGameMode(mGameMode);
         mStack = new Stack<>();
-        mUndo.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    PopFromStack();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
-                }
-            }
-        });
-        mApprove.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mGameMode) {
-                    try {
-                        SaveCreatedMaze();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
-                    }
-                } else {//game mode
-                    try {
-                        ApprovePath();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
-
-                    }
-                }
-            }
-        });
-        mChest.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!mActivity.GetController().GetListFlag()) {
-                            mActivity.GetController().SetListFlag(true);
-                            try {
-                                SetAllBoardClickable(false);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
-                            }
-                            try {
-
-                                if (mGameMode) {
-                                    if (CheckPath()) {
-                                        SetLocationOnScreen();
-                                        OpenChest();
-                                    } else {
-                                        Toast.makeText(mActivity, FINISH_THE_PATH_TAG, Toast.LENGTH_LONG).show();
-                                    }
-                                } else {
-                                    TrapListFragment listFragment = new TrapListFragment();
-                                    mActivity.getFragmentManager().beginTransaction().add(R.id.container_list_board, listFragment).addToBackStack(null).commit();
-                                }
-                            }catch (Exception e){
-                                e.printStackTrace();
-                                new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
-                            }
-                        }
-                    }
-                });
-            }
-        });
+        SetListeners();
         mStepsTile = new LinkedList<>();
+        SetAllBoardClickable(true);
     }
 
 
@@ -189,6 +128,21 @@ public class Board extends ImageView {
         mActivity.GetController().SetGameMode(mGameMode);
         SetGameMode(mGameMode);
         mStack = new Stack<>();
+        mStepsTile = new LinkedList<>();
+        SetAllBoardClickable(true);
+        SetListeners();
+    }
+
+
+
+    public void KillAllRunningThreads() throws Exception {
+        for (Thread thread : mAllThreads) {
+            if (thread.isAlive())
+                thread.interrupt();
+        }
+    }
+
+    public void SetListeners(){
         mUndo.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -196,7 +150,7 @@ public class Board extends ImageView {
                     PopFromStack();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                    new ExceptionHandler( e, mActivity.GetFireBaseOperator());
                 }
             }
         });
@@ -211,7 +165,7 @@ public class Board extends ImageView {
                     }
                 }catch (Exception e ){
                     e.printStackTrace();
-                    new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                    new ExceptionHandler( e, mActivity.GetFireBaseOperator());
                 }
             }
         });
@@ -227,7 +181,7 @@ public class Board extends ImageView {
                                 SetAllBoardClickable(false);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                                new ExceptionHandler( e, mActivity.GetFireBaseOperator());
                             }
                             try {
                                 if (mGameMode) {
@@ -243,60 +197,20 @@ public class Board extends ImageView {
                                 }
                             }catch (Exception e){
                                 e.printStackTrace();
-                                new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                                new ExceptionHandler( e, mActivity.GetFireBaseOperator());
                             }
                         }
                     }
                 });
             }
         });
-        mStepsTile = new LinkedList<>();
-
-    }
-
-    public int GetBoardLayoutId (){
-        return mBoardId;
-    }
-
-    public ArrayList<DataRowBoard> GetDataForRow() {
-        return mDataForRow;
-    }
-
-
-    public MainActivity GetActivity() {
-        return mActivity;
-    }
-
-    public Tile[][] GetTiles() {
-        return mTiles;
-    }
-
-    public void KillAllRunningThreads() throws Exception {
-        for (Thread thread : mAllThreads) {
-            if (thread.isAlive())
-                thread.interrupt();
-        }
-    }
-
-    public void SetSwipedTiles(ArrayList<Tile> list) {
-        mSwipedTiles = list;
-    }
-
-    public ArrayList<Tile> GetSwipedTiles() {
-        return mSwipedTiles;
-    }
-
-    public static Stack<Tile> GetStack() {
-        return mStack;
-    }
-
-    public static LinkedList<Tile> GetStepsTile() {
-        return mStepsTile;
     }
 
     public void AnimatePath() throws Exception {
         mActivity.GetController().SetFinishedGame();
         mActivity.GetController().StopTimer();
+        SetAllBoardClickable(false);
+        mChest.setClickable(false);
         SetLocationOnScreen();
         mDIdPlayerWin = true;
         mActivity.runOnUiThread(new Runnable() {
@@ -331,7 +245,7 @@ public class Board extends ImageView {
                             SetTrapAnimationTile(to, delay + 400, avatar);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                            new ExceptionHandler( e, mActivity.GetFireBaseOperator());
                         }
                         mDIdPlayerWin = false;
                         break;
@@ -342,7 +256,7 @@ public class Board extends ImageView {
                                 SetCounterTrapAnimation(to, delay + 400);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                                new ExceptionHandler( e, mActivity.GetFireBaseOperator());
                             }
                         }
                     from = to;
@@ -360,7 +274,7 @@ public class Board extends ImageView {
                                         Thread.sleep(finalDelay);
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
-                                        new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                                        new ExceptionHandler(e, mActivity.GetFireBaseOperator());
                                     }
                                     mActivity.GetController().SetWin(true);
                                     mActivity.getFragmentManager().beginTransaction().remove(mActivity.getFragmentManager().findFragmentById(R.id.container_board)).addToBackStack(null).commit();
@@ -369,7 +283,7 @@ public class Board extends ImageView {
                                         KillAllRunningThreads();
                                     } catch (Exception e) {
                                         e.printStackTrace();
-                                        new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                                        new ExceptionHandler( e, mActivity.GetFireBaseOperator());
                                     }
                                 }
                             }));
@@ -431,13 +345,6 @@ public class Board extends ImageView {
         PROTECTION = 0;
     }
 
-    public LinearLayout GetBoardLayout() {
-        return mBoardLayout;
-    }
-
-    public boolean IsGameMode() {
-        return mGameMode;
-    }
 
     public void TrapDialog()throws Exception {
         mActivity.runOnUiThread(new Runnable() {
@@ -481,7 +388,7 @@ public class Board extends ImageView {
                                     AnimatePath();
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                                    new ExceptionHandler( e, mActivity.GetFireBaseOperator());
                                 }
                                 dialog.cancel();
                                 break;
@@ -534,7 +441,7 @@ public class Board extends ImageView {
                                     tile.SetIcon(R.drawable.blast);
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                                    new ExceptionHandler( e, mActivity.GetFireBaseOperator());
                                 }
                                 AnimationDrawable blast = (AnimationDrawable) tile.getBackground();
                                 blast.start();
@@ -570,7 +477,7 @@ public class Board extends ImageView {
                                     tile.SetIcon(R.mipmap.star);
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    new ExceptionHandler( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber(), mActivity.GetFireBaseOperator());
+                                    new ExceptionHandler( e, mActivity.GetFireBaseOperator());
                                 }
                                 ObjectAnimator rotator = ObjectAnimator.ofFloat(tile, "rotationY", 360);
                                 rotator.setDuration(1000);
@@ -599,6 +506,9 @@ public class Board extends ImageView {
             int row = tile.GetRow();
             int col = tile.GetCol();
             SetAllBoardClickable(false);
+            mApprove.setClickable(true);
+            // mChest.setClickable(clickable);
+            mUndo.setClickable(true);
 
             mTiles[row][col].setClickable(true);
             if (row > 0 && !mTiles[row - 1][col].IsStepped()) {
@@ -627,39 +537,7 @@ public class Board extends ImageView {
         mUndo.setClickable(clickable);
     }
 
-    public void SetTrapIcon(final int iconId) throws Exception{
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mTrapIcon.setBackgroundResource(iconId);
-            }
-        });
-    }
 
-    public boolean PopFromStack()throws Exception {
-        if (!mStack.isEmpty()) {
-            Tile temp = mStack.pop();
-            if (temp != null) {
-                temp.SetFromStack(true);
-                temp.callOnClick();
-                temp.SetFromStack(false);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public void DrainStack() {
-        mStack.clear();
-    }
-
-    public boolean HasEntrance() {
-        return mHasEntrance;
-    }
-
-    public void SetHasEntrance(boolean mHasEntrance) {
-        this.mHasEntrance = mHasEntrance;
-    }
 
     public boolean CheckPath()throws Exception {
         if (mHasEntrance && mHasExit) {
@@ -671,8 +549,92 @@ public class Board extends ImageView {
         return false;
     }
 
-    public int GetBoardDataSize() {
-        return mDataForRow.size();
+
+    public void SaveCreatedMaze()throws Exception {
+        clearVisited();
+        if (CheckPath()) {
+            DrainStack();
+            SaveBoard(mUser);
+        } else
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getContext(), NO_PATH_TAG, Toast.LENGTH_LONG).show();
+                }
+            });
+    }
+
+    public void SaveBoard(final User user)throws Exception {
+        if (mActivity.GetDBOperator().GetDBManager() == null) {
+            mActivity.GetDBOperator().SetDBManager(new DataBaseManager());
+            mActivity.GetDBOperator().GetDBManager().start();
+        }
+        mActivity.GetDBOperator().GetDBManager().addThread(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mIsInSavingProcess){
+                            Toast.makeText(mActivity, "Already saving...", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        else {
+                            mIsInSavingProcess = true;
+                            Toast.makeText(mActivity, "Saving....", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                try {
+                    if (CheckPath()) {
+                        mActivity.GetFireBaseOperator().SaveBoardToFireBase(Board.this, mUser);
+                    }
+                } catch (Exception e) {
+                    new ExceptionHandler(e,mActivity.GetFireBaseOperator());
+                    mIsInSavingProcess = false;
+                    e.printStackTrace();
+                }
+                mActivity.GetFireBaseOperator().UpdateCoins(mUser);
+                mActivity.GetFireBaseOperator().UpdateTraps(mUser);
+                ArrayList<DataRowBoard> rowsForBoard = new ArrayList<>();
+                mActivity.GetDBOperator().DeleteUserBoard(user.GetId());
+                for (int i = 0; i < NUM_OF_ROWS; i++) {
+                    for (int j = 0; j < NUM_OF_COLS; j++) {
+                        Tile tile = mTiles[i][j];
+                        if (tile != null) {
+                            int isWall = 0;
+                            int isEntrance = 0;
+                            int isExit = 0;
+                            if (tile.IsWall())
+                                isWall = 1;
+                            if (tile.IsEntrance())
+                                isEntrance = 1;
+                            if (tile.IsExit())
+                                isExit = 1;
+                            String tileId = tile.GetTileId();
+                            if (!mFromCopyConstructor) {
+                                mActivity.GetDBOperator().AddRow_Tiles(new DataRowTile(tileId, i, j, isWall, isEntrance, isExit));//tile
+                                if (tile.GetTrap() != null) {
+                                    mActivity.GetDBOperator().AddRow_TileTrap(new DataRowTileTrap(tile.GetTrap().GetTrapIndex(), tileId));//save trap_tile
+                                }
+                            }
+                            rowsForBoard.add(new DataRowBoard(user.GetId(), i, j, tileId));//save board
+                        }
+                    }
+                }
+                if (rowsForBoard.size() > 0) {
+                    mActivity.GetDBOperator().AddRows_Board(rowsForBoard);
+                }
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mActivity, MAZE_SAVED_TAG, Toast.LENGTH_LONG).show();
+                        mIsInSavingProcess = false;
+                    }
+                });
+            }
+        }));
+
     }
 
     public boolean ContainsPath(ArrayList<Tile> set)throws Exception {
@@ -822,6 +784,14 @@ public class Board extends ImageView {
     }
 
 
+    public LinearLayout GetBoardLayout() {
+        return mBoardLayout;
+    }
+
+    public boolean IsGameMode() {
+        return mGameMode;
+    }
+
     public Button GetApproveBtn() {
         return mApprove;
     }
@@ -849,85 +819,21 @@ public class Board extends ImageView {
         }
     }
 
-    public void SaveCreatedMaze()throws Exception {
-        clearVisited();
-        if (CheckPath()) {
-            SaveBoard(mUser);
-            //DrainStack();
-           // mActivity.onBackPressed();
-        } else
-            mActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getContext(), NO_PATH_TAG, Toast.LENGTH_LONG).show();
-                }
-            });
+    public int GetBoardLayoutId (){
+        return mBoardId;
     }
 
-    public void SaveBoard(final User user)throws Exception {
-        if (mActivity.GetDBOperator().GetDBManager() == null) {
-            mActivity.GetDBOperator().SetDBManager(new DataBaseManager());
-            mActivity.GetDBOperator().GetDBManager().start();
-        }
-        mActivity.GetDBOperator().GetDBManager().addThread(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(mActivity, "Saving....", Toast.LENGTH_LONG).show();
-                        //mActivity.findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-                    }
-                });
-                try {
-                    if (CheckPath()) {
-                        mActivity.GetFireBaseOperator().SaveBoardToFireBase(Board.this, mUser);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                mActivity.GetFireBaseOperator().UpdateCoins(mUser);
-                mActivity.GetFireBaseOperator().UpdateTraps(mUser);
-                ArrayList<DataRowBoard> rowsForBoard = new ArrayList<>();
-                mActivity.GetDBOperator().DeleteUserBoard(user.GetId());
-                for (int i = 0; i < NUM_OF_ROWS; i++) {
-                    for (int j = 0; j < NUM_OF_COLS; j++) {
-                        Tile tile = mTiles[i][j];
-                        if (tile != null) {
-                            int isWall = 0;
-                            int isEntrance = 0;
-                            int isExit = 0;
-                            if (tile.IsWall())
-                                isWall = 1;
-                            if (tile.IsEntrance())
-                                isEntrance = 1;
-                            if (tile.IsExit())
-                                isExit = 1;
-                            String tileId = tile.GetTileId();
-                            if (!mFromCopyConstructor) {
-                                mActivity.GetDBOperator().AddRow_Tiles(new DataRowTile(tileId, i, j, isWall, isEntrance, isExit));//tile
+    public ArrayList<DataRowBoard> GetDataForRow() {
+        return mDataForRow;
+    }
 
-                                if (tile.GetTrap() != null) {
-                                    mActivity.GetDBOperator().AddRow_TileTrap(new DataRowTileTrap(tile.GetTrap().GetTrapIndex(), tileId));//save trap_tile
-                                }
-                            }
-                            rowsForBoard.add(new DataRowBoard(user.GetId(), i, j, tileId));//save board
-                        }
-                    }
-                }
-                if (rowsForBoard.size() > 0) {
-                    mActivity.GetDBOperator().AddRows_Board(rowsForBoard);
-                }
-                mActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //mActivity.findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
-                        Toast.makeText(mActivity, MAZE_SAVED_TAG, Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        }));
 
+    public MainActivity GetActivity() {
+        return mActivity;
+    }
+
+    public Tile[][] GetTiles() {
+        return mTiles;
     }
 
     public void SetButtons() throws Exception{
@@ -944,5 +850,55 @@ public class Board extends ImageView {
             mApprove = (Button) mActivity.findViewById(R.id.ok_create);
             mChest = (Button) mActivity.findViewById(R.id.place_trap);
         }
+    }
+
+    public void SetTrapIcon(final int iconId) throws Exception{
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mTrapIcon.setBackgroundResource(iconId);
+            }
+        });
+    }
+
+    public boolean PopFromStack()throws Exception {
+        if (!mStack.isEmpty()) {
+            Tile temp = mStack.pop();
+            if (temp != null) {
+                temp.SetFromStack(true);
+                temp.callOnClick();
+                temp.SetFromStack(false);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public void DrainStack() {
+        mStack.clear();
+    }
+
+    public boolean HasEntrance() {
+        return mHasEntrance;
+    }
+
+    public void SetHasEntrance(boolean mHasEntrance) {
+        this.mHasEntrance = mHasEntrance;
+    }
+
+    public void SetSwipedTiles(ArrayList<Tile> list) {
+        mSwipedTiles = list;
+    }
+
+    public ArrayList<Tile> GetSwipedTiles() {
+        return mSwipedTiles;
+    }
+
+    public static Stack<Tile> GetStack() {
+        return mStack;
+    }
+
+    public static LinkedList<Tile> GetStepsTile() {
+        return mStepsTile;
     }
 }
