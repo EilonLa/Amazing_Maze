@@ -1,5 +1,8 @@
 package DB;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -233,7 +236,6 @@ public class FireBaseOperator {
                             if (userName != null) {
                                 mActivity.GetController().SetUser(new User(userId, password, userName, (int) coins, null));
                                 GetUserTrapsFromFireBase(mActivity.GetController().GetUser());
-
                             }
                         } else {
                             mActivity.GetController().IsWaitingForFireBase(false);
@@ -242,6 +244,7 @@ public class FireBaseOperator {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
+                        mActivity.GetController().IsWaitingForFireBase(false);
                     }
                 });
             } else if (userId == null && userName != null) {
@@ -268,7 +271,7 @@ public class FireBaseOperator {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        mActivity.GetController().IsWaitingForFireBase(false);
                     }
                 });
             } else {
@@ -364,4 +367,6 @@ public class FireBaseOperator {
         ref.setValue(errorText);
 
     }
+
+
 }

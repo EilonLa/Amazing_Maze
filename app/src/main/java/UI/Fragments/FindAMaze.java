@@ -56,8 +56,10 @@ public class FindAMaze extends Fragment {
                     @Override
                     public void run() {
                         mActivity.GetController().GetOptionalUsers().clear();
-                        mActivity.GetController().IsWaitingForFireBase(true);
-                        mActivity.GetFireBaseOperator().GetOptionalUsersForGame(query);
+                        if (mActivity.GetController().IsNetworkAvailable()) {
+                            mActivity.GetController().IsWaitingForFireBase(true);
+                            mActivity.GetFireBaseOperator().GetOptionalUsersForGame(query);
+                        }
                         while (mActivity.GetController().IsWaitingForFireBase()) {
                         }
                         mActivity.runOnUiThread(new Runnable() {
@@ -88,6 +90,7 @@ public class FindAMaze extends Fragment {
     public static class QueryResultListFragment extends ListFragment implements AdapterView.OnItemClickListener {
         private RivalViewAdapter mAdapter;
         private MainActivity mActivity;
+        private boolean mItemClicked = false;
 
         @Nullable
         @Override
@@ -105,32 +108,41 @@ public class FindAMaze extends Fragment {
 
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            final String userName = getListView().getAdapter().getItem(i).toString();
-            if (userName != null && !userName.equals(mActivity.GetController().GetUser().GetUserName())) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mActivity.GetController().IsWaitingForFireBase(true);
-                        mActivity.GetFireBaseOperator().GetRivalUser(userName);
-                        while (mActivity.GetController().IsWaitingForFireBase()) {
+            if (!mItemClicked) {
+                mItemClicked = true;
+                final String userName = getListView().getAdapter().getItem(i).toString();
+                if (userName != null && !userName.equals(mActivity.GetController().GetUser().GetUserName())) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mActivity.GetController().IsNetworkAvailable()) {
+                                mActivity.GetController().IsWaitingForFireBase(true);
+                            }else {
+                                return;
+                            }
+                            mActivity.GetFireBaseOperator().GetRivalUser(userName);
+                            while (mActivity.GetController().IsWaitingForFireBase()) {
+                            }
+                            if (mActivity.GetController().GetDoesRivalHasBoard()) {
+                                mActivity.GetController().SetIsSearching(false);
+                                mActivity.getFragmentManager().beginTransaction().remove(mActivity.getFragmentManager().findFragmentById(R.id.container_find)).addToBackStack(null).commit();
+                                mActivity.getFragmentManager().beginTransaction().add(R.id.container_board, new GamePlay()).addToBackStack(null).commit();
+                            } else {
+                                mActivity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(mActivity, NO_BOARD_FOR_RIVAL_ERROR, Toast.LENGTH_LONG).show();
+                                        mItemClicked = false;
+                                    }
+                                });
+                            }
                         }
-                        if (mActivity.GetController().GetDoesRivalHasBoard()) {
-                            mActivity.GetController().SetIsSearching(false);
-                            mActivity.getFragmentManager().beginTransaction().remove(mActivity.getFragmentManager().findFragmentById(R.id.container_find)).addToBackStack(null).commit();
-                            mActivity.getFragmentManager().beginTransaction().add(R.id.container_board, new GamePlay()).addToBackStack(null).commit();
-                        }else{
-                            mActivity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(mActivity,NO_BOARD_FOR_RIVAL_ERROR,Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                    }
-                }).start();
-            }
-            if (userName != null && userName.equals(mActivity.GetController().GetUser().GetUserName())){
-                Toast.makeText(mActivity,OWN_MAZE_ERROR,Toast.LENGTH_LONG).show();
+                    }).start();
+                }
+                if (userName != null && userName.equals(mActivity.GetController().GetUser().GetUserName())) {
+                    Toast.makeText(mActivity, OWN_MAZE_ERROR, Toast.LENGTH_LONG).show();
+                    mItemClicked = false;
+                }
             }
         }
 

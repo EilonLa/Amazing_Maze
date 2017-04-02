@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.cdv.amazingmaze.R;
 
@@ -43,16 +44,34 @@ public class LoginFragment extends Fragment {
         mSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().getFragmentManager().beginTransaction().add(R.id.log_container,new SignInFragment()).commit();
-                mActivity.GetController().SetIsSignIn(true);
+                if (mActivity.GetController().IsNetworkAvailable()) {
+                    getActivity().getFragmentManager().beginTransaction().add(R.id.log_container, new SignInFragment()).commit();
+                    mActivity.GetController().SetIsSignIn(true);
+                }else{
+                    mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(mActivity,"Please connect to the internet!", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
         });
         mSignUp = (Button) getActivity().findViewById(R.id.activity_main_sign_up);
         mSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().getFragmentManager().beginTransaction().add(R.id.log_container,new SignUpFragment()).commit();
-                mActivity.GetController().SetIsSignUp(true);
+                if (mActivity.GetController().IsNetworkAvailable()) {
+                    getActivity().getFragmentManager().beginTransaction().add(R.id.log_container, new SignUpFragment()).commit();
+                    mActivity.GetController().SetIsSignUp(true);
+                }else{
+                    mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(mActivity,"Please connect to the internet!", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
         });
 

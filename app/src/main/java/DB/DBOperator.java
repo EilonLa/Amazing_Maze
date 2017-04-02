@@ -195,7 +195,9 @@ public class DBOperator extends SQLiteOpenHelper {
                 row = new DataRowUser(c.getString(0), c.getString(1), c.getString(2), c.getInt(3),null);
             }
             c.close();
-            row.SetTrapIndexes(GetUserTraps(row.GetUserId()));
+            if (row != null) {
+                row.SetTrapIndexes(GetUserTraps(row.GetUserId()));
+            }
             return row;
         } catch (Exception e) {
             Log.i("", CREATE_DB_TAG);

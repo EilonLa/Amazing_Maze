@@ -3,7 +3,12 @@ package Logic;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.view.View;
+import android.widget.Toast;
+
+import com.example.cdv.amazingmaze.R;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import DB.DataRowBoard;
 import DB.DataRowUser;
 import UI.Board;
+import UI.Fragments.LoginFragment;
 import activities.MainActivity;
 
 /**
@@ -46,7 +52,14 @@ public class GameController {
         mActivity = activity;
         mSharedPref = mActivity.getPreferences(Context.MODE_PRIVATE);
         mIsWaitingForFireBase = new AtomicBoolean(false);
-        CreateUser();
+        if (IsNetworkAvailable()) {
+            CreateUser();
+        }else{
+            Toast.makeText(mActivity,"Please connect to the internet!", Toast.LENGTH_LONG).show();
+            mActivity.findViewById(R.id.container_intro_background).setVisibility(View.INVISIBLE);
+            mActivity.getFragmentManager().beginTransaction().add(R.id.activity_main_login, new LoginFragment()).commit();
+            //mActivity.GetLogOut().setVisibility(View.INVISIBLE);
+        }
     }
 
     /**
@@ -62,11 +75,14 @@ public class GameController {
                 String lastId = mSharedPref.getString("lastId", "null");
                 if (!lastId.equals("null")) {
                     synchronized (MainActivity.mLockObject) {
-                        mIsWaitingForFireBase.set(true);
-                        mActivity.GetFireBaseOperator().GetUserFromFireBase(lastId, null, null);
+                        if (IsNetworkAvailable()) {
+                            mIsWaitingForFireBase.set(true);
+                            mActivity.GetFireBaseOperator().GetUserFromFireBase(lastId, null, null);
+                        }
                     }
                     while (mIsWaitingForFireBase.get()) {
                     } //wait for fireBase to get the data
+
                     if (mUser == null) {//try to get the user from the db
                         synchronized (MainActivity.mLockObject) {
                             DataRowUser dataRowUser = mActivity.GetDBOperator().GetLastUserFromDB(lastId);
@@ -160,6 +176,13 @@ public class GameController {
         if (mGameTimerThread != null && mGameTimerThread.isAlive()) {
             mGameTimerThread.interrupt();
         }
+    }
+
+    public boolean IsNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) mActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public void ResetFlags() {

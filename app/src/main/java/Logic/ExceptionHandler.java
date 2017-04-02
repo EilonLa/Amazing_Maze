@@ -12,6 +12,7 @@ import DB.FireBaseOperator;
 public class ExceptionHandler {
     public ExceptionHandler(Exception e, FireBaseOperator fireBaseOperator) {
         fireBaseOperator.InsertErrorLog( e.getStackTrace()[0].getClassName()+"/"+e.getStackTrace()[0].getMethodName()+" : "+e.getStackTrace()[0].getLineNumber());
+        e.printStackTrace();
         fireBaseOperator.GetActivity().finish();
     }
 }

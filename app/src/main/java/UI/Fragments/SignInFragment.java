@@ -97,8 +97,18 @@ public class SignInFragment extends Fragment {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            mActivity.GetController().IsWaitingForFireBase(true);
-                            mActivity.GetFireBaseOperator().GetUserFromFireBase(null,userName, password);
+                            if (mActivity.GetController().IsNetworkAvailable()) {
+                                mActivity.GetController().IsWaitingForFireBase(true);
+                                mActivity.GetFireBaseOperator().GetUserFromFireBase(null,userName, password);
+                            }else{
+                                mActivity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(mActivity,"Please connect to the internet!", Toast.LENGTH_LONG).show();
+                                        mActivity.onBackPressed();
+                                    }
+                                });
+                            }
                             while (mActivity.GetController().IsWaitingForFireBase()){}
                             if (mActivity.GetController().GetUser() != null) {
                                 Log.i("USER", "NOT NULL");
